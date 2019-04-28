@@ -9,8 +9,11 @@ import { HomePage } from '../pages/home/home';
 import { ActionPage } from '../pages/action/action';
 import { TabsPage } from '../pages/tabs/tabs';
 
+import { DetectionDetailPage} from '../pages/detection-detail/detection-detail';
+
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { NeochiRedisServiceProvider } from '../providers/neochi-redis-service/neochi-redis-service';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     DetectionPage,
     HomePage,
     ActionPage,
-    TabsPage
+    TabsPage,
+    DetectionDetailPage
   ],
   imports: [
     BrowserModule,
@@ -32,12 +36,14 @@ import { SplashScreen } from '@ionic-native/splash-screen';
     DetectionPage,
     HomePage,
     ActionPage,
-    TabsPage
+    TabsPage,
+    DetectionDetailPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    NeochiRedisServiceProvider
   ]
 })
 export class AppModule {}

@@ -6,11 +6,20 @@
 
 <ion-content padding>
   <h2>Welcome to Neoch App!</h2>
-  <ul>
-    <li>Redis上のeyeからの画像を表示する</li>
-    <li>brainが格納した、Redis上の、人がいる確率、動いている確率、寝ている確率をグラフ表示する</li>
-    <li>brain-trained-model-uploaderに対してアップロードした学習結果の有無をRedis上で確認して表示する</li>
-    <li>Redis上のリモコン信号の有無を表示する</li>
-    <li>Redis上のアクションの有無を表示する</li>  
-  </ul>
+<!-- Default Item -->
+<!-- Item Inset Lines -->
+<ion-item lines="inset">
+    <ion-label>Item Lines Inset</ion-label>
+  </ion-item>
+  
+  <ion-list>
+      <button ion-item *ngFor="let user of users">
+        <ion-avatar item-left>
+          <img [src]="user.avatar_url">
+        </ion-avatar>
+        <h2>id : {{ user.id }}</h2>
+        <h2>name : {{ user.login }}</h2>
+      </button>
+    </ion-list>
+
 </ion-content>

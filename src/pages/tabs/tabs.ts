@@ -11,8 +11,8 @@ import { HomePage } from '../home/home';
 export class TabsPage {
 
   tab1Root = HomePage;
-  tab2Root = RemoconPage;
-  tab3Root = DetectionPage;
+  tab2Root = DetectionPage;
+  tab3Root = RemoconPage;
   tab4Root = ActionPage;
   constructor() {
 

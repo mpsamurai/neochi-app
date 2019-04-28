@@ -1,31 +1,18 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>リモコンタブ</ion-title>
+    <ion-title>
+      寝落ち検出
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
+  <h2>データセット</h2>
+  <!-- List of Text Items -->
   <ion-list>
-    <ion-list-header></ion-list-header>
-    <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      Redis上のリモコン信号の一覧
-    </ion-item>
-    <ion-item>
-        <ion-icon name="ionic" item-start></ion-icon>
-      Redis上のラズパイ上のファイルとしてのリモコン信号の有無、記録日時を表示する
-    </ion-item>
-    <ion-item>
-        <ion-icon name="ionic" item-start></ion-icon>
-      Redis上のリモコン信号の名前を編集する
-    </ion-item>
-    <ion-item>
-        <ion-icon name="ionic" item-start></ion-icon>
-      Redis経由でir-transceiverにRedis上とラズパイ上にファイルとしてある、リモコン信号を削除させる
-    </ion-item>
-    <ion-item>
-        <ion-icon name="ionic" item-start></ion-icon>
-        Redis経由でir-transceiverにRedis上とラズパイ上のファイルとして、リモコン信号を記録する(上書きもあり)
-    </ion-item>
+      <ion-item *ngFor="let item of items" (click)="openNavDetailsPage(item)">{{ item.title }}</ion-item>
   </ion-list>
+  <ion-fab right bottom>
+      <button ion-fab color="light" (click)="openNavDetailsPage(item)"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
 </ion-content>
