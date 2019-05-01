@@ -102,3 +102,11 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#neochi
+node_modules
+plugins
+platforms
+resources
+www
+

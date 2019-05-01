@@ -24,7 +24,6 @@
     "@ionic-native/splash-screen": "~4.15.0",
     "@ionic-native/status-bar": "~4.15.0",
     "@ionic/storage": "2.2.0",
-    "Redis": "file:../plugin/cordova-plugin-Redis",
     "ajv-keywords": "^3.4.0",
     "chart.js": "^2.8.0",
     "cordova-android": "8.0.0",
@@ -58,7 +57,6 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-Redis": {},
       "cordova-plugin-redis": {}
     },
     "platforms": [
