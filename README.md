@@ -1,5 +1,10 @@
-# neochi-app
+# ionic-tabs-navigation-best-practices
+IonicでTabsを使った画面遷移のベストプラクティス
 
-Ionic Angular でのWebアプリ実装です。
-
-xxx
+# How to run
+```
+$ git clone https://github.com/tetsushi-ito/ionic-tabs-navigation-best-practices.git
+$ cd ionic-tabs-navigation-best-practices
+$ npm install
+$ ionic serve
+```

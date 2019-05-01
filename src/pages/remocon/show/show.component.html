@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+        リモコン信号
+      </ion-title>
+      <ion-fab right bottom>
+          <button ion-fab color="light" ><ion-icon name="trash"></ion-icon></button>
+    </ion-fab>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-list>
+      <ion-item>
+        <ion-label>名前</ion-label>
+        <ion-input formControlName="name">{{remocon.name}}<</ion-input>
+      </ion-item>
+      <div ion-text class="error" no-lines *ngIf="errors.name">{{errors.name}}</div>
+
+      <ion-item>
+        <ion-label>待ち時間</ion-label>
+        <ion-input formControlName="interval">{{remocon.interval}</ion-input>
+      </ion-item>
+      <div ion-text class="error" no-lines *ngIf="errors.interval">{{errors.interval}}</div>
+
+      <ion-item>
+        <ion-label>状態（記録時刻）</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>情報を記憶する</ion-label>
+        <ion-checkbox formControlName="save"></ion-checkbox>
+      </ion-item>
+      <div ion-text class="error" no-lines *ngIf="errors.save">{{errors.save}}</div>
+
+    </ion-list>
+    <button ion-button type="submit" block>記録開始</button>
+  </form>
+</ion-content>
