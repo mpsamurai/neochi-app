@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>ホーム | 令和元年五月一日</ion-title>
+    <ion-fab right bottom>
+      <button ion-fab color="light" (click)="onSetting()"><ion-icon name="cog"></ion-icon></button>
+    </ion-fab>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h2>Neochi状態 [動作中]</h2>
+
+<!-- Default Item -->
+<h2>寝落ち統計</h2>
+<ion-card>
+  <ion-card-header>
+    寝落ち画像
+  </ion-card-header>
+  <ion-card-content>
+    <div class="image-container">
+      <img class="product-image" src="">
+    </div>
+  </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      寝ているか
+    </ion-card-header>
+    <ion-card-content>
+      <canvas #lineCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+ <ion-list>
+    <ion-list-header>通知</ion-list-header>
+   <ion-item>学習が未実行です。</ion-item>
+   <ion-item>リモコン信号が未記録です。</ion-item>
+   <ion-item>アクションが未設定です。</ion-item>
+  </ion-list>
+
+</ion-content>
