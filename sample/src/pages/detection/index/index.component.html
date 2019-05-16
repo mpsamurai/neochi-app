@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      寝落ち検知
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      データセット
+    </ion-list-header>
+
+    <ion-item *ngFor="let detection of detections">
+      <ion-icon name="contact"
+                item-start
+                color="primary"></ion-icon>
+
+      <ion-label>{{detection.name}}</ion-label>
+
+      <button ion-button
+              outline
+              item-end
+              (click)="onDetectionClicked(detection)">詳細</button>
+    </ion-item>
+  </ion-list>
+  <ion-fab right bottom>
+    <button ion-fab color="light" (click)="onDetectionAdd()"><ion-icon name="add"></ion-icon></button>
+</ion-fab>
+</ion-content>

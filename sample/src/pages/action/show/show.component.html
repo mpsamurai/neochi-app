@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{action.title}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-content>
+    <ion-list>
+      <ion-list-header>
+        アクション実行順序
+      </ion-list-header>
+
+      <ion-item *ngFor="let act of actionFlow">
+        <ion-icon name="ionic"
+                  item-start
+                  color="primary"></ion-icon>
+
+        <ion-label>{{act}}</ion-label>
+
+        <button ion-button
+                outline
+                item-end
+                (click)="onActionRemove(act)">❎</button>
+      </ion-item>
+    </ion-list>
+    <ion-fab right bottom>
+      <button ion-fab color="light" (click)="onActionAdd()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>

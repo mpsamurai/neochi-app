@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      アクション
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      アクション一覧
+    </ion-list-header>
+
+    <ion-item *ngFor="let action of actions">
+      <ion-icon name="ionic"
+                item-start
+                color="primary"></ion-icon>
+
+      <ion-label>{{action.title}}</ion-label>
+
+      <button ion-button
+              outline
+              item-end
+              (click)="onActionClicked(action)">詳細</button>
+    </ion-item>
+  </ion-list>
+</ion-content>

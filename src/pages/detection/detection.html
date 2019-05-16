@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      寝落ち検出
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h2>データセット</h2>
+  <!-- List of Text Items -->
+  <ion-list>
+      <ion-item *ngFor="let item of items" (click)="openNavDetailsPage(item)">{{ item.title }}</ion-item>
+  </ion-list>
+  <ion-fab right bottom>
+      <button ion-fab color="light" (click)="openNavDetailsPage(item)"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>

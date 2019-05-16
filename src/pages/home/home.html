@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>ホーム</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <h2>Welcome to Neoch App!</h2>
+<!-- Default Item -->
+<!-- Item Inset Lines -->
+<ion-item lines="inset">
+    <ion-label>Item Lines Inset</ion-label>
+  </ion-item>
+  
+  <ion-list>
+      <button ion-item *ngFor="let user of users">
+        <ion-avatar item-left>
+          <img [src]="user.avatar_url">
+        </ion-avatar>
+        <h2>id : {{ user.id }}</h2>
+        <h2>name : {{ user.login }}</h2>
+      </button>
+    </ion-list>
+
+</ion-content>

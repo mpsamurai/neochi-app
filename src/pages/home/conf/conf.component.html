@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>設定</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <ion-list>
+
+      <ion-item>
+        <ion-label>IPアドレス</ion-label>
+        <ion-input formControlName="ipaddr"></ion-input>
+      </ion-item>
+      <div ion-text class="error" no-lines *ngIf="errors.ipaddr">{{errors.ipaddr}}</div>
+
+      <ion-item>
+        <ion-label>ポート番号</ion-label>
+        <ion-input formControlName="port"></ion-input>
+      </ion-item>
+      <div ion-text class="error" no-lines *ngIf="errors.port">{{errors.port}}</div>
+
+    </ion-list>
+  </form>
+</ion-content>
