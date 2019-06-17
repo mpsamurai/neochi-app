@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { MyApp } from './app.component';
 
 import components from './components';
+import { RedisProvider } from '../providers/redis/redis';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import components from './components';
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    RedisProvider
   ]
 })
 export class AppModule {}
