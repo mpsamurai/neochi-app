@@ -13,9 +13,9 @@ declare const cordova: any;
 @Injectable()
 export class RedisProvider {
 
-  private static readonly REDIS_HOST = 'localhost';
+  private static readonly REDIS_HOST = '192.168.0.20';
   private static readonly REDIS_PORT = 6379;
-  private static readonly WEBDIS_HOST = 'localhost';
+  private static readonly WEBDIS_HOST = '192.168.0.20';
   private static readonly WEBDIS_PORT = 7379;
 
   constructor(public http: HttpClient,
@@ -23,7 +23,11 @@ export class RedisProvider {
     console.log('Hello RedisProvider Provider');
   }
 
-  initialize(host, port, success, error): Promise<void> {
+  private getWebdisBaseUrl(): string {
+    return 'http://' + RedisProvider.WEBDIS_HOST + ':' + RedisProvider.WEBDIS_PORT;
+  }
+
+  async initialize(): Promise<void> {
     if (this.platform.is('cordova')) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.initialize(
@@ -38,21 +42,11 @@ export class RedisProvider {
     }
   }
 
-  setStringValue(key, value, success, error) {
-  }
-
-  setIntegerValue(key, value, success, error) {
-  }
-
-  setJsonValue(key, value, success, error) {
-  }
-
-  getStringValue(key: string): Promise<void> {
+  async setStringValue(key, value): Promise<void> {
     if (this.platform.is('cordova')) {
       return new Promise<void>((resolve, reject) => {
-        cordova.plugins.Redis.initialize(
-          RedisProvider.REDIS_HOST, 
-          RedisProvider.REDIS_PORT,
+        cordova.plugins.Redis.setStringValue(
+          key, value, 
           (winParam) => {
             resolve();
           }, (error) => {
@@ -60,29 +54,82 @@ export class RedisProvider {
           });
       });
     } else {
-      // Webdis 経由でアクセスする
-      this.http.get('http://' + RedisProvider.WEBDIS_HOST + ':' + RedisProvider.WEBDIS_PORT + '/GET/' + key).subscribe(data => {
-      }, (error) => {
+      return new Promise<void>((resolve, reject) => {
+        // Webdis 経由でアクセスする
+        const url = this.getWebdisBaseUrl() + '/SET/' + encodeURIComponent(key) + '/' + encodeURIComponent(value);
+        this.http.get(url).subscribe<any>(data => {
+          console.log('data:', data);        
+          resolve();
+        }, (error) => {
+          reject(error);
+        });
+      });
+    }    
+  }
+
+  async setIntegerValue(key: string, value: number): Promise<void> {
+    await this.setStringValue(key, String(value));
+  }
+
+  async setJsonValue(key: string, value: object): Promise<void> {
+    await this.setStringValue(key, JSON.stringify(value));
+  }
+
+  async getStringValue(key: string): Promise<string> {
+    if (this.platform.is('cordova')) {
+      return new Promise<string>((resolve, reject) => {
+        cordova.plugins.Redis.getStringValue(
+          key, 
+          (winParam) => {
+            resolve(winParam);
+          }, (error) => {
+            reject(error);
+          });
+      });
+    } else {
+      return new Promise<string>((resolve, reject) => {
+        // Webdis 経由でアクセスする
+        const url = this.getWebdisBaseUrl() + '/GET/' + key;
+        this.http.get(url).subscribe<any>(data => {
+          console.log('data:', data);        
+          resolve(data.GET);
+        }, (error) => {
+          reject(error);
+        });
       });
     }
   }
 
-  getIntegerValue(key, success, error) {
+  async getIntegerValue(key: string): Promise<number> {
+    const stringValue = await this.getStringValue(key);
+    return Number(stringValue);
   }
 
-  getJsonValue(key, success, error) {
+  async getJsonValue(key: string): Promise<object> {
+    const stringValue = await this.getStringValue(key);
+    return JSON.parse(stringValue);
   }
 
-  publish(channel, message, success, error) {
+  async publish(channel, message) {
   }
 
-  subscribe(channel, success, error) {
+  async subscribe(channel) {
   }
 
-  unsubscribe(channel, success, error) {
+  async unsubscribe(channel) {
   }
 
-  finalize(success, error) {
+  async finalize(): Promise<void> {
+    if (this.platform.is('cordova')) {
+      return new Promise<void>((resolve, reject) => {
+        cordova.plugins.Redis.finalize(
+          (winParam) => {
+            resolve();
+          }, (error) => {
+            reject(error);
+          });
+      });
+    }    
   }
 
 }

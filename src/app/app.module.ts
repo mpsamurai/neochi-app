@@ -8,6 +8,8 @@ import { MyApp } from './app.component';
 import components from './components';
 import { RedisProvider } from '../providers/redis/redis';
 
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -15,7 +17,8 @@ import { RedisProvider } from '../providers/redis/redis';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    HttpClientModule,    
   ],
   bootstrap: [IonicApp],
   entryComponents: [
