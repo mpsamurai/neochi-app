@@ -28,7 +28,7 @@
     "chart.js": "^2.8.0",
     "cordova-android": "8.0.0",
     "cordova-ios": "5.0.1",
-    "cordova-plugin-redis": "file:../plugin/cordova-plugin-redis-master",
+    "cordova-plugin-redis": "file:../cordova-plugin-redis",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
     "ngstorage": "^0.3.11",
