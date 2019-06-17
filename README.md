@@ -3,14 +3,10 @@
 1. 以下の手順でアプリとpluginをリポジトリから取得する
 ```
 $ mkdir xxxx
-$ git clone https://github.com/ythink/neochi-app.git
-
-$ mkdir plugin
-$ cd plugin
-$ git clone https://github.com/evianyuji/cordova-plugin-redis.git
+$ git clone https://github.com/mpsamurai/neochi-app.git
+$ git clone https://github.com/mpsamurai/cordova-plugin-redis
 
 $ cd ../neochi-app
-$ ionic cordova plugin add ../plugin/cordova-plugin-redis-master 
 ```
 
 
