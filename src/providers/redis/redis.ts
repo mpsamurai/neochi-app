@@ -59,7 +59,7 @@ export class RedisProvider {
       return new Promise<void>((resolve, reject) => {
         // Webdis 経由でアクセスする
         const url = this.getWebdisBaseUrl() + '/SET/' + encodeURIComponent(key) + '/' + encodeURIComponent(value);
-        this.http.get(url).subscribe<any>(data => {
+        this.http.get(url).subscribe(data => {
           console.log('data:', data);        
           resolve();
         }, (error) => {
@@ -92,10 +92,12 @@ export class RedisProvider {
       return new Promise<string>((resolve, reject) => {
         // Webdis 経由でアクセスする
         const url = this.getWebdisBaseUrl() + '/GET/' + encodeURIComponent(key) + '.txt';
-        this.http.get(url).subscribe<any>(data => {
-          console.log('data:', data);        
-          resolve(data);
+        this.http.get(url, {responseType: 'text'}).subscribe(data => {
+          console.log('data:', data);
+          const stringValue = (typeof data === 'string' ? data : '');
+          resolve(stringValue);
         }, (error) => {
+          console.log('error:', error);
           reject(error);
         });
       });
@@ -126,7 +128,7 @@ export class RedisProvider {
       return new Promise<void>((resolve, reject) => {
         // Webdis 経由でアクセスする
         const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
-        this.http.get(url).subscribe<any>(data => {
+        this.http.get(url).subscribe(data => {
           console.log('data:', data);
           resolve();
         }, (error) => {
@@ -137,6 +139,14 @@ export class RedisProvider {
   }
 
   subscribe(channel: string, success: (message: string) => void, error: (error: any) => void) {
+    this.unsubscribe(channel).then(() => {
+      this.subscribeSub(channel, success, error);
+    }).catch((reason) => {
+      error(reason);
+    });
+  }
+
+  private subscribeSub(channel: string, success: (message: string) => void, error: (error: any) => void) {
     if (this.platform.is('cordova')) {
       cordova.plugins.Redis.subscribe(
         channel,

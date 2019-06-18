@@ -50,4 +50,18 @@ export class RedisSamplePage {
     await this.redisProvider.setStringValue('key', 'my value');
   }
 
+  async onClickPublish() {
+    await this.redisProvider.publish('channel', 'message');
+  }
+
+  onClickSubscribe() {
+    this.redisProvider.subscribe('channel', (message) => {
+      console.log('message:', message);      
+    }, (error) => {
+      console.log('error:', error);
+    });
+  }
+
+
+
 }
