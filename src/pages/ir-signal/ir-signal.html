@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      リモコン信号
+    </ion-title>
+
+    <ion-buttons end>
+      <button ion-button [disabled]="isDeleteButtonDisabled()" (click)="onClickDelete()">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+      <button ion-button [disabled]="isSaveButtonDisabled()" (click)="onClickSave()">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>      
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content padding>
+  <ion-list>
+    <ion-item>
+      <ion-label>名前</ion-label>
+      <ion-input [(ngModel)]="nameInputValue" (input)="onInputName()"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>待ち時間</ion-label>
+      <ion-input [(ngModel)]="sleepInputValue" (input)="onInputSleep()"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>信号</ion-label>
+      <ion-label>{{getIrSignalStateLabel()}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <button ion-button [disabled]="isReceiveButtonDisabled()" (click)="onClickReceive()" block>{{getReceiveButtonLabel()}}</button>
+  <button ion-button [disabled]="isSendButtonDisabled()" (click)="onClickSend()" block>テスト送信</button>
+  
+  <ion-label>{{getIrReceivingMessage()}}</ion-label>
+  <ion-label>{{getIrSendingMessage()}}</ion-label>
+  
+</ion-content>

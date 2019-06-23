@@ -12,20 +12,20 @@
       赤外線信号一覧
     </ion-list-header>
 
-    <ion-item *ngFor="let remocon of remocons">
+    <ion-item *ngFor="let irSignal of irSignals">
       <ion-icon name="ionic"
                 item-start
                 color="primary"></ion-icon>
 
-      <ion-label>{{remocon.name}}</ion-label>
+      <ion-label>{{irSignal.name}}</ion-label>
 
       <button ion-button
               outline
               item-end
-              (click)="onRemoconClicked(remocon)">詳細</button>
+              (click)="onClickDetail(irSignal)">詳細</button>
     </ion-item>
   </ion-list>
   <ion-fab right bottom>
-    <button ion-fab color="light" (click)="onRemoconAdd()"><ion-icon name="add"></ion-icon></button>
-</ion-fab>
+    <button ion-fab color="light" (click)="onClickAdd()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
 </ion-content>

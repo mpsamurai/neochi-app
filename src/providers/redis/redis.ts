@@ -22,7 +22,6 @@ export class RedisProvider {
 
   constructor(public http: HttpClient,
     private platform: Platform) {
-    console.log('Hello RedisProvider Provider');
   }
 
   private getWebdisBaseUrl(): string {
@@ -97,8 +96,14 @@ export class RedisProvider {
           const stringValue = (typeof data === 'string' ? data : '');
           resolve(stringValue);
         }, (error) => {
-          console.log('error:', error);
-          reject(error);
+          // キーが見つからなかった場合はnullを返す
+          if (error.hasOwnProperty('status') && error.status === 404) {
+            console.log('not found:', error);
+            resolve(null);
+          } else {
+            console.log('error:', error);
+            reject(error);  
+          }
         });
       });
     }
@@ -114,6 +119,11 @@ export class RedisProvider {
     return JSON.parse(stringValue);
   }
 
+  /**
+   * 
+   * @param channel 
+   * @param message nullは使えない
+   */
   async publish(channel: string, message: string): Promise<void> {
     if (this.platform.is('cordova')) {
       return new Promise<void>((resolve, reject) => {
@@ -125,16 +135,69 @@ export class RedisProvider {
           });
       });      
     } else {
+
+
       return new Promise<void>((resolve, reject) => {
         // Webdis 経由でアクセスする
         const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
-        this.http.get(url).subscribe(data => {
+        console.log('publish() url:', url);
+        this.http.get(url, {responseType: 'json'}).subscribe(data => {
           console.log('data:', data);
           resolve();
         }, (error) => {
+          console.log('error:', error);
           reject(error);
         });
       });
+
+
+      /*
+      return new Promise<void>((resolve, reject) => {
+        try {        
+          var previous_response_length = 0
+          const xhr = new XMLHttpRequest();
+          const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
+          console.log('publish() url:', url);
+          xhr.open("GET", url, true);
+          xhr.onreadystatechange = () => {
+            console.log('xhr.onreadystatechange() xhr.readyState', xhr.readyState);
+            if (xhr.readyState == 3) {
+              const response = xhr.responseText;
+              const chunk = response.slice(previous_response_length);
+              previous_response_length = response.length;
+              console.log(chunk);
+              const json = JSON.parse(chunk);
+              const value = json.PUBLISH;
+              if (value === 1) {
+                resolve();
+              }
+              xhr.abort();
+            }
+          };
+          xhr.send(null);
+          this.subXhrDict[channel] = xhr;
+        } catch (e) {
+          console.log('e:', e);
+          reject(e);
+        }
+      });
+      */
+
+      
+      /*
+      return new Promise<void>((resolve, reject) => {
+        // Webdis 経由でアクセスする
+        const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
+        console.log('publish() url:', url);
+        this.http.get(url, {responseType: 'text'}).subscribe(data => {
+          console.log('data:', data);
+          resolve();
+        }, (error) => {
+          console.log('error:', error);
+          reject(error);
+        });
+      });
+      */
     }    
   }
 
