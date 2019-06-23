@@ -135,8 +135,6 @@ export class RedisProvider {
           });
       });      
     } else {
-
-
       return new Promise<void>((resolve, reject) => {
         // Webdis 経由でアクセスする
         const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
@@ -149,56 +147,7 @@ export class RedisProvider {
           reject(error);
         });
       });
-
-
-      /*
-      return new Promise<void>((resolve, reject) => {
-        try {        
-          var previous_response_length = 0
-          const xhr = new XMLHttpRequest();
-          const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
-          console.log('publish() url:', url);
-          xhr.open("GET", url, true);
-          xhr.onreadystatechange = () => {
-            console.log('xhr.onreadystatechange() xhr.readyState', xhr.readyState);
-            if (xhr.readyState == 3) {
-              const response = xhr.responseText;
-              const chunk = response.slice(previous_response_length);
-              previous_response_length = response.length;
-              console.log(chunk);
-              const json = JSON.parse(chunk);
-              const value = json.PUBLISH;
-              if (value === 1) {
-                resolve();
-              }
-              xhr.abort();
-            }
-          };
-          xhr.send(null);
-          this.subXhrDict[channel] = xhr;
-        } catch (e) {
-          console.log('e:', e);
-          reject(e);
-        }
-      });
-      */
-
-      
-      /*
-      return new Promise<void>((resolve, reject) => {
-        // Webdis 経由でアクセスする
-        const url = this.getWebdisBaseUrl() + '/PUBLISH/' + encodeURIComponent(channel) + '/' + encodeURIComponent(message);
-        console.log('publish() url:', url);
-        this.http.get(url, {responseType: 'text'}).subscribe(data => {
-          console.log('data:', data);
-          resolve();
-        }, (error) => {
-          console.log('error:', error);
-          reject(error);
-        });
-      });
-      */
-    }    
+    }
   }
 
   subscribe(channel: string, success: (message: string) => void, error: (error: any) => void) {
