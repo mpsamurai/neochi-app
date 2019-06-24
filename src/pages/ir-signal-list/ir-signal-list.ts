@@ -27,24 +27,21 @@ export class IrSignalListPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad IrSignalListPage');
     this.irSignals = [];
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
+    console.log("IrSignalListPage.ionViewWillEnter()");        
     this.redisProvider.initialize().then(() => {
-      console.log("this.redisProvider.initialize() then()");
       this.updateIrSignalList();
     }).catch(() => {
-      console.log("this.redisProvider.initialize() catch()");      
     });
   }
 
-  ionViewDidLeave() {
+  ionViewWillLeave() {
+    console.log("IrSignalListPage.ionViewWillLeave()");        
     this.redisProvider.finalize().then(() => {
-      console.log("this.redisProvider.finalize() then()");
     }).catch(() => {
-      console.log("this.redisProvider.finalize() catch()");      
     });    
   }
 
@@ -78,7 +75,7 @@ export class IrSignalListPage {
     let params: IrSignalPageNavParams = {
       irSignal: irSignal,
     };    
-    this.app.getRootNav().push('IrSignalPage', {[NAV_PARAMS_PARAM_NAME]: params});
+    this.navCtrl.push('IrSignalPage', {[NAV_PARAMS_PARAM_NAME]: params});
   }
 
   onClickAdd() {
@@ -91,8 +88,8 @@ export class IrSignalListPage {
 
     let params: IrSignalPageNavParams = {
       irSignal: irSignal,
-    };    
-    this.app.getRootNav().push('IrSignalPage', {[NAV_PARAMS_PARAM_NAME]: params});
+    };
+    this.navCtrl.push('IrSignalPage', {[NAV_PARAMS_PARAM_NAME]: params});
   }
 
 }

@@ -51,8 +51,6 @@ export class IrSignalPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad IrSignalListPage');
-   
     this.irReceivingState = IrReceivingState.Booting;
     this.irSendingState = IrSendingState.Booting;
 
@@ -73,14 +71,20 @@ export class IrSignalPage {
 
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
+    console.log("IrSignalPage.ionViewWillEnter()");    
     this.redisProvider.initialize().then(() => {
-      console.log("this.redisProvider.initialize() then()");
       this.checkIrSenderReceiverState();
       this.redisSubscribe();
     }).catch(() => {
-      console.log("this.redisProvider.initialize() catch()");
     });
+  }
+
+  ionViewWillLeave() {
+    console.log("IrSignalPage.ionViewWillLeave()");    
+    this.redisProvider.finalize().then(() => {
+    }).catch(() => {
+    });    
   }
 
   checkIrSenderReceiverState() {

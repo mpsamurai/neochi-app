@@ -9,11 +9,13 @@ import components from './components';
 import { RedisProvider } from '../providers/redis/redis';
 
 import { HttpClientModule } from '@angular/common/http';
+import { TabsPage } from '../pages/tabs/tabs';
 
 @NgModule({
   declarations: [
     MyApp,
     ...components,
+    TabsPage
   ],
   imports: [
     BrowserModule,
@@ -24,6 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
   entryComponents: [
     MyApp,
     ...components,
+    TabsPage
   ],
   providers: [
     StatusBar,

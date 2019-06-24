@@ -22,22 +22,17 @@ export class RedisSamplePage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RedisSamplePage');
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
     this.redisProvider.initialize().then(() => {
-      console.log("this.redisProvider.initialize() then()");
     }).catch(() => {
-      console.log("this.redisProvider.initialize() catch()");      
     });
   }
 
-  ionViewDidLeave() {
+  ionViewWillLeave() {
     this.redisProvider.finalize().then(() => {
-      console.log("this.redisProvider.finalize() then()");
     }).catch(() => {
-      console.log("this.redisProvider.finalize() catch()");      
     });    
   }
 

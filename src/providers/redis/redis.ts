@@ -35,8 +35,10 @@ export class RedisProvider {
           RedisProvider.REDIS_HOST,
           RedisProvider.REDIS_PORT,
           (winParam) => {
+            console.log('RedisProvider.initialize() winParam:', winParam);
             resolve();
           }, (error) => {
+            console.log('RedisProvider.initialize() error:', error);
             reject(error);
           });
       });
@@ -49,8 +51,10 @@ export class RedisProvider {
         cordova.plugins.Redis.setStringValue(
           key, value, 
           (winParam) => {
+            console.log('RedisProvider.setStringValue() winParam:', winParam);
             resolve();
           }, (error) => {
+            console.log('RedisProvider.setStringValue() error:', error);
             reject(error);
           });
       });
@@ -82,8 +86,10 @@ export class RedisProvider {
         cordova.plugins.Redis.getStringValue(
           key, 
           (winParam) => {
+            console.log('RedisProvider.getStringValue() winParam:', winParam);
             resolve(winParam);
           }, (error) => {
+            console.log('RedisProvider.getStringValue() error:', error);            
             reject(error);
           });
       });
@@ -129,8 +135,10 @@ export class RedisProvider {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.publish(channel, message, 
           (winParam) => {
+            console.log('RedisProvider.publish() winParam:', winParam);
             resolve();
           }, (error) => {
+            console.log('RedisProvider.publish() error:', error);
             reject(error);
           });
       });      
@@ -154,6 +162,7 @@ export class RedisProvider {
     this.unsubscribe(channel).then(() => {
       this.subscribeSub(channel, success, error);
     }).catch((reason) => {
+      console.log('RedisProvider.subscribe() error:', error);      
       error(reason);
     });
   }
@@ -163,8 +172,10 @@ export class RedisProvider {
       cordova.plugins.Redis.subscribe(
         channel,
         (winParam) => {
+          console.log('RedisProvider.subscribeSub() winParam:', winParam);
           success(winParam);
         }, (error) => {
+          console.log('RedisProvider.subscribeSub() error:', error);
           error(error);
         });
     } else {
@@ -200,8 +211,10 @@ export class RedisProvider {
         cordova.plugins.Redis.unsubscribe(
           channel, 
           (winParam) => {
+            console.log('RedisProvider.unsubscribe() winParam:', winParam);            
             resolve();
           }, (error) => {
+            console.log('RedisProvider.unsubscribe() error:', error);
             reject(error);
           });
       });      
@@ -219,8 +232,10 @@ export class RedisProvider {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.finalize(
           (winParam) => {
+            console.log('RedisProvider.finalize() winParam:', winParam);
             resolve();
           }, (error) => {
+            console.log('RedisProvider.finalize() error:', error);
             reject(error);
           });
       });
