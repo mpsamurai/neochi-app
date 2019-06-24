@@ -175,10 +175,7 @@ export class IrSignalPage {
   }
 
   getIrReceivingMessage(): string {
-
-    if (this.irReceivingState === IrReceivingState.Ready) {
-      return '';
-    } else if (this.irReceivingState === IrReceivingState.Error) {
+    if (this.irReceivingState === IrReceivingState.Error) {
       return 'リモコン信号の受信ができない状態です';
     } else {
       return this.irReceivingMessage;
