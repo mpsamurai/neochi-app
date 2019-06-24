@@ -167,16 +167,16 @@ export class RedisProvider {
     });
   }
 
-  private subscribeSub(channel: string, success: (message: string) => void, error: (error: any) => void) {
+  private subscribeSub(channel: string, successCallback: (message: string) => void, errorCallback: (error: any) => void) {
     if (this.platform.is('cordova')) {
       cordova.plugins.Redis.subscribe(
         channel,
         (winParam) => {
           console.log('RedisProvider.subscribeSub() winParam:', winParam);
-          success(winParam);
+          successCallback(winParam);
         }, (error) => {
           console.log('RedisProvider.subscribeSub() error:', error);
-          error(error);
+          errorCallback(error);
         });
     } else {
       try {
@@ -193,14 +193,14 @@ export class RedisProvider {
               const json = JSON.parse(chunk);
               const array = json.SUBSCRIBE;
               if (array[0] === 'message') {
-                success(array[2]);
+                successCallback(array[2]);
               }
             }
         };
         xhr.send(null);
         this.subXhrDict[channel] = xhr;
       } catch (e) {
-        error(e);
+        errorCallback(e);
       }
     }
   }
