@@ -18,6 +18,8 @@ export class RedisProvider {
   private static readonly WEBDIS_HOST = '192.168.0.20';
   private static readonly WEBDIS_PORT = 7379;
 
+  private static readonly USES_WEBDIS = true;
+
   subXhrDict = {};
 
   constructor(public http: HttpClient,
@@ -29,7 +31,7 @@ export class RedisProvider {
   }
 
   async initialize(): Promise<void> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.initialize(
           RedisProvider.REDIS_HOST,
@@ -46,7 +48,7 @@ export class RedisProvider {
   }
 
   async setStringValue(key, value): Promise<void> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.setStringValue(
           key, value, 
@@ -81,7 +83,7 @@ export class RedisProvider {
   }
 
   async getStringValue(key: string): Promise<string> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<string>((resolve, reject) => {
         cordova.plugins.Redis.getStringValue(
           key, 
@@ -131,7 +133,7 @@ export class RedisProvider {
    * @param message nullは使えない
    */
   async publish(channel: string, message: string): Promise<void> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.publish(channel, message, 
           (winParam) => {
@@ -168,7 +170,7 @@ export class RedisProvider {
   }
 
   private subscribeSub(channel: string, successCallback: (message: string) => void, errorCallback: (error: any) => void) {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       cordova.plugins.Redis.subscribe(
         channel,
         (winParam) => {
@@ -206,7 +208,7 @@ export class RedisProvider {
   }
 
   async unsubscribe(channel): Promise<void> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.unsubscribe(
           channel, 
@@ -228,7 +230,7 @@ export class RedisProvider {
   }
 
   async finalize(): Promise<void> {
-    if (this.platform.is('cordova')) {
+    if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.finalize(
           (winParam) => {
