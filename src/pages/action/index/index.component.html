@@ -7,22 +7,13 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>
-      アクション一覧
-    </ion-list-header>
-
-    <ion-item *ngFor="let action of actions">
-      <ion-icon name="ionic"
-                item-start
-                color="primary"></ion-icon>
-
-      <ion-label>{{action.title}}</ion-label>
-
-      <button ion-button
-              outline
-              item-end
-              (click)="onActionClicked(action)">詳細</button>
+  <ion-list *ngIf="pageState === pageStateEnum.Ready">
+    <ion-item *ngFor="let actionSet of actionSets" (click)="onClickActionSet(actionSet)">
+      <ion-label>{{actionSet.name}}</ion-label>
     </ion-item>
   </ion-list>
+
+  <ion-item *ngIf="pageState === pageStateEnum.Error">
+    <ion-label>neochiへの接続に失敗しました</ion-label>
+  </ion-item>
 </ion-content>

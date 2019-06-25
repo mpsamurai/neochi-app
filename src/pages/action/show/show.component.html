@@ -1,32 +1,34 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      {{action.title}}
+      {{actionSet?.name}}
     </ion-title>
+
+    <ion-buttons end>
+      <button ion-button [disabled]="isSaveButtonDisabled()" (click)="onClickSave()">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>      
+    </ion-buttons>    
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-content>
-    <ion-list>
-      <ion-list-header>
-        アクション実行順序
-      </ion-list-header>
+  <ion-list *ngIf="pageState === pageStateEnum.Ready">
 
-      <ion-item *ngFor="let act of actionFlow">
-        <ion-icon name="ionic"
-                  item-start
-                  color="primary"></ion-icon>
-
-        <ion-label>{{act}}</ion-label>
-
-        <button ion-button
-                outline
-                item-end
-                (click)="onActionRemove(act)">❎</button>
+    <ng-container *ngFor="let action of actionSet.actions; let i = index; let isLast = last;">
+      <ion-item>
+        <ion-label>{{irSignals[action.parameters['id']].name}}</ion-label>
+        <button ion-button clear item-end (click)="onClickRemove(i)">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
       </ion-item>
-    </ion-list>
-    <ion-fab right bottom>
-      <button ion-fab color="light" (click)="onActionAdd()"><ion-icon name="add"></ion-icon></button>
+      <ion-item *ngIf="!isLast">
+        <ion-icon name="arrow-down"></ion-icon>
+      </ion-item>
+    </ng-container>
+    
+  </ion-list>
+  <ion-fab right bottom>
+    <button ion-fab color="light" (click)="onClickAdd()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 </ion-content>

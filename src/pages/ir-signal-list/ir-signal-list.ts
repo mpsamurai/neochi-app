@@ -61,12 +61,13 @@ export class IrSignalListPage {
     this.irSignals = [];
     const signals = json['signals'];
     signals.forEach(s => {
-      let irSignal = new IrSignal();
-      irSignal.id = s.id;
-      irSignal.name = s.name;
-      irSignal.sleep = s.sleep;
-      irSignal.filePath = s.filePath;
-      irSignal.fileTimeStamp = s.fileTimeStamp;
+      let irSignal = {
+        id: s.id,
+        name: s.name,
+        sleep: s.sleep,
+        filePath: s.filePath,
+        fileTimeStamp: s.fileTimeStamp,
+      };
       this.irSignals.push(irSignal);
     });
   }
@@ -79,12 +80,13 @@ export class IrSignalListPage {
   }
 
   onClickAdd() {
-    let irSignal = new IrSignal();
-    irSignal.id = null;
-    irSignal.name = '';
-    irSignal.sleep = 0;
-    irSignal.filePath = null;
-    irSignal.fileTimeStamp = null;
+    let irSignal = {
+      id: null,
+      name: '',
+      sleep: 0,
+      filePath: null,
+      fileTimeStamp: null,
+    };
 
     let params: IrSignalPageNavParams = {
       irSignal: irSignal,

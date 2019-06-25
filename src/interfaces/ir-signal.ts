@@ -1,7 +1,7 @@
-export class IrSignal {
-  public id: number;
-  public name: string;
-  public sleep: number;
-  public filePath: string;
-  public fileTimeStamp: string;
+export interface IrSignal {
+  id: number;
+  name: string;
+  sleep: number;
+  filePath: string;
+  fileTimeStamp: string;
 }

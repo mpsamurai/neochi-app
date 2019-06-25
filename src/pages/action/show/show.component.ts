@@ -1,72 +1,125 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, AlertController  } from 'ionic-angular';
-import { Action } from '../../../models/action.model';
+import { ActionSetPageNavParams, NAV_PARAMS_PARAM_NAME } from '../../../interfaces/neochi';
+import { RedisProvider } from '../../../providers/redis/redis';
+import { ActionSet } from '../../../interfaces/action-set';
+import { IrSignal } from '../../../interfaces/ir-signal';
+import { Action } from '../../../interfaces/action';
 
-declare const cordova: any;
-// declare const Redis: any;
-// var Redis = cordova.plugins.Redis
+enum PageState {
+  Booting,
+  Ready,
+  Error
+}
 
 @Component({
   selector: 'page-article-show',
   templateUrl: './show.component.html'
 })
 export class ShowPageComponent {
+  pageStateEnum: typeof PageState = PageState;
 
-  action: Action;
-  actionFlow: String[] = ['部屋の照明 ON', 'エアコン ON']
-  actionMap: { [key: number]: string; } = {};
+  actionSetId: number;
+  pageState: PageState;
+  actionSets: ActionSet[];
+  actionSet: ActionSet;
+  irSignals: IrSignal[];
+
+  isActionSetChanged: boolean;
 
   constructor(
     public navCtrl: NavController,
-    navParams: NavParams,
-    private alertCtrl: AlertController
-    ) {
-      this.action = navParams.get('action');
-      this.actionMap[1] = '部屋の照明 ON';
-      this.actionMap[2] = '部屋の照明 FF';
-      this.actionMap[3] = 'エアコン ON';
-
-    console.log('ionViewDidLoad NewsPage');
-
-    // window.alert(cordova.plugins.Redis.initialize);
-
-
+    private navParams: NavParams,
+    private redisProvider: RedisProvider,
+    private alertCtrl: AlertController) {
   }
+
   ionViewDidLoad() {
-    //
-    var jsondata = {
-      actionSets: [
-        {
-          id: 0,
-          name: "寝落ち検出時",
-          actions: [
-            {
-              type: "ir",
-              parameters: {
-                id: 0
-              }
-            },
-            {
-              type: "ir",
-              parameters: {
-                id: 1
-              }
-            },
-          ]
-        }
-      ]
-    };
-
-
-    this.putAction("neochi-app:action", jsondata);
+    let params: ActionSetPageNavParams = this.navParams.get(NAV_PARAMS_PARAM_NAME);
+    if (params) {
+      this.actionSetId = params.id;
+    }
+    this.isActionSetChanged = false;
   }
-  onActionRemove(action: string) {alert("TODO: 実装予定")}
-  onActionAdd() {
-    let checkOptions = [
-      {type: 'radio', label: '部屋の照明 ON', value: "1", checked: false},
-      {type: 'radio', label: this.actionMap[2], value: "2", checked: false},
-      {type: 'radio', label: this.actionMap[3], value: "3", checked: false}
-    ]
+
+  ionViewWillEnter() {
+    console.log("IrSignalListPage.ionViewWillEnter()");
+    this.redisProvider.initialize().then(async () => {
+      const b1 = await this.updateActionSet();
+      const b2 = await this.updateIrSignals();
+      if (b1 && b2) {
+        this.pageState = PageState.Ready;
+      } else {
+        this.pageState = PageState.Error;
+      }
+    }).catch(() => {
+    });
+  }
+
+  ionViewWillLeave() {
+    console.log("IrSignalListPage.ionViewWillLeave()");        
+    this.redisProvider.finalize().then(() => {
+    }).catch(() => {
+    });    
+  }
+
+  async updateActionSet(): Promise<boolean> {
+    let json: object;
+    try {
+      json = await this.redisProvider.getJsonValue('neochi-app:action');
+    } catch (error) {
+      console.log("updateActionSet() error:", error);
+      return false;
+    }
+
+    this.actionSets = json['actionSets'];
+    this.actionSet = this.actionSets[this.actionSetId];
+
+    return true;
+  }
+
+  async updateIrSignals(): Promise<boolean> {
+    this.irSignals = [];
+    let json: object;
+    try {
+      json = await this.redisProvider.getJsonValue('ir-receiver:ir');
+    } catch (error) {
+      console.log("error:", error);
+      return false;
+    }
+    if (!json || !json.hasOwnProperty('signals')) {
+      return false;
+    }
+    const signals = json['signals'];
+    signals.forEach(s => {
+      let irSignal = {
+        id: s.id,
+        name: s.name,
+        sleep: s.sleep,
+        filePath: s.filePath,
+        fileTimeStamp: s.fileTimeStamp,
+      };
+      this.irSignals.push(irSignal);
+    });
+    return true;
+  }
+
+  onClickRemove(index: number) {
+    this.actionSet.actions.splice(index, 1); 
+    this.isActionSetChanged = true;
+  }
+  
+  onClickAdd() {
+    let checkOptions = [];
+    this.irSignals.forEach((irSignal, index) => {
+      checkOptions.push({
+        type: 'radio',
+        label: irSignal.name,
+        value: irSignal.id,
+        checked: (index === 0),
+      });
+    });
+
     let alert = this.alertCtrl.create({
       title: 'アクション追加',
       inputs: checkOptions,
@@ -80,54 +133,35 @@ export class ShowPageComponent {
         {
           text: 'OK',
           handler: data => {
-              //設定保存
+            console.log('data:', data);
+            const action: Action = {
+              type: 'ir',
+              parameters: {
+                id: data,
+              },
+            }
+            this.actionSet.actions.push(action);
+            this.isActionSetChanged = true;
           }
         }
       ]
     });
     alert.present();
   };
-  putAction(key: String, value: Object) {
-    // window.alert(cordova.plugins.Redis.initialize);
-    try {
-      // TODO: TODO: rx.jsで直す
-      cordova.plugins.Redis.initialize('172.31.16.33','6379',
-        function(m) {window.alert("Redis init success:"+m);
-        cordova.plugins.Redis.setJsonValue(key, value,
-            function(m) {
-              // window.alert("set data");
-                cordova.plugins.Redis.getJsonValue(key,
-                  function(m) {
-                    // debug print
-                    window.alert(JSON.stringify(m));
-                    cordova.plugins.Redis.finalize(
-                      function(m) {window.alert("Redis fin success:"+m);},
-                      function(e) {window.alert("Redis fin error:"+e);}
-                    );
-                  },
-                  function(e) {window.alert("Redis get error:"+e);
-                    cordova.plugins.Redis.finalize(
-                      function(m) {window.alert("Redis fin success:"+m);},
-                      function(e) {window.alert("Redis fin error:"+e);}
-                    );
-                    }
-                );
-              },
-              function(e) {
-                window.alert(e);
-                cordova.plugins.Redis.finalize(
-                  function(m) {window.alert("Redis fin success:"+m);},
-                  function(e) {window.alert("Redis fin error:"+e);}
-                );
-              }
-        )},
-        function(e) {window.alert("Redis init error:"+e);
-        }
-      );
 
-    } catch (e) {
-      window.alert(e);
-    }
+  isSaveButtonDisabled(): boolean{
+    return !this.isActionSetChanged;
+  }
+  
+  onClickSave() {
+    const json = {
+      'actionSets': this.actionSets,
+    };
+    this.redisProvider.setJsonValue('neochi-app:action', json).then(() => {
+      this.navCtrl.pop();
+    }).catch((reason)=>{
+      console.log('onClickSave() reason:', reason);
+    })
   }
 
 }

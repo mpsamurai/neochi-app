@@ -1,33 +1,91 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { ShowPageComponent } from '../show/show.component';
-import { Action } from '../../../models/action.model';
+import { RedisProvider } from '../../../providers/redis/redis';
+import { ActionSet } from '../../../interfaces/action-set';
+import { NAV_PARAMS_PARAM_NAME, ActionSetPageNavParams } from '../../../interfaces/neochi';
+
+enum PageState {
+  Booting,
+  Ready,
+  Error
+}
 
 @Component({
   selector: 'page-action-index',
   templateUrl: './index.component.html'
 })
 export class IndexPageComponent {
+  pageStateEnum: typeof PageState = PageState;
 
-  actions: Action[] = [
-    new Action(1, '寝落ち検出時', [1,3]),
-    new Action(2, '拍手検出時', [1,3]),
-  ];
+  private static readonly DEFAULT_ACTION_JSON = {
+    actionSets: [
+      {id: 0, name: "寝落ち検出時", actions: []},
+      {id: 1, name: "拍手検出時", actions: []},
+    ]
+  }
 
-  actionMap: { [key: number]: string; } = {};
-
+  pageState: PageState;
+  actionSets: ActionSet[];
 
   constructor(
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    private redisProvider: RedisProvider
   ) {
-
   }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad NewsPage');
+    this.pageState = PageState.Booting;
+    this.actionSets = [];
   }
-  onActionClicked(action: Action) {
-    this.navCtrl.push(ShowPageComponent, {
-      action: action,
+
+  ionViewWillEnter() {
+    console.log("IrSignalListPage.ionViewWillEnter()");
+    this.redisProvider.initialize().then(() => {
+      this.updateActionSetList();
+    }).catch(() => {
     });
+  }
+
+  ionViewWillLeave() {
+    console.log("IrSignalListPage.ionViewWillLeave()");        
+    this.redisProvider.finalize().then(() => {
+    }).catch(() => {
+    });    
+  }
+
+  async updateActionSetList() {
+    this.actionSets = [];
+
+    let json: object;
+    try {
+      json = await this.redisProvider.getJsonValue('neochi-app:action');
+      if (json === null) {
+        json = IndexPageComponent.DEFAULT_ACTION_JSON;
+        await this.redisProvider.setJsonValue('neochi-app:action', json);
+      }
+    } catch (error) {
+      console.log("updateActionSetList() error:", error);
+      this.pageState = PageState.Error;
+      return;
+    }
+
+    json['actionSets'].forEach(actionSetObject => {
+      let actionSet: ActionSet = {
+        id: actionSetObject['id'],
+        name: actionSetObject['name'],
+        actions: [],
+      };
+      this.actionSets.push(actionSet);
+    });
+    this.pageState = PageState.Ready;
+  }
+
+  onClickActionSet(actionSet: ActionSet) {
+    let params: ActionSetPageNavParams = {
+      id: actionSet.id,
+    };    
+    this.navCtrl.push(ShowPageComponent, {[NAV_PARAMS_PARAM_NAME]: params});
   }
 }
