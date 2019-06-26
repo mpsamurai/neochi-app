@@ -1,25 +1,52 @@
 <ion-header>
   <ion-navbar>
     <ion-title>ホーム</ion-title>
+
+    <ion-buttons end>
+      <button ion-button [disabled]="isSaveButtonDisabled()" (click)="onClickSettings()">
+        <ion-icon name="cog"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h2>Welcome to Neoch App!</h2>
-<!-- Default Item -->
-<!-- Item Inset Lines -->
-<ion-item lines="inset">
-    <ion-label>Item Lines Inset</ion-label>
-  </ion-item>
-  
+
+  <ion-label>neochi状態:-</ion-label>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div class="c-image-panel">
+          <div class="inner"><canvas id="canvas" class="image"></canvas></div>
+        </div>
+      </ion-col>
+      <ion-col>
+        <canvas></canvas>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <canvas baseChart [datasets]="getPOnBedDatasets()" [labels]="lineChartLabels" [options]="lineChartOptions"
+          [chartType]="lineChartType"></canvas>
+      </ion-col>
+      <ion-col>
+        <canvas baseChart [datasets]="getPSleepDatasets()" [labels]="lineChartLabels" [options]="lineChartOptions"
+          [chartType]="lineChartType"></canvas>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
   <ion-list>
-      <button ion-item *ngFor="let user of users">
-        <ion-avatar item-left>
-          <img [src]="user.avatar_url">
-        </ion-avatar>
-        <h2>id : {{ user.id }}</h2>
-        <h2>name : {{ user.login }}</h2>
-      </button>
-    </ion-list>
+    <ion-item>
+      <ion-label>学習が未実行です</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>リモコン信号が未記録です</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>アクションが未設定です</ion-label>
+    </ion-item>
+  </ion-list>
 
 </ion-content>

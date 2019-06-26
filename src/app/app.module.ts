@@ -10,6 +10,7 @@ import { RedisProvider } from '../providers/redis/redis';
 
 import { HttpClientModule } from '@angular/common/http';
 import { TabsPage } from '../pages/tabs/tabs';
+import { ImageProvider } from '../providers/image/image';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { TabsPage } from '../pages/tabs/tabs';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    RedisProvider
+    RedisProvider,
+    ImageProvider
   ]
 })
 export class AppModule {}

@@ -74,7 +74,7 @@ export class RedisProvider {
     }    
   }
 
-  async setIntegerValue(key: string, value: number): Promise<void> {
+  async setNumberValue(key: string, value: number): Promise<void> {
     await this.setStringValue(key, String(value));
   }
 
@@ -117,7 +117,7 @@ export class RedisProvider {
     }
   }
 
-  async getIntegerValue(key: string): Promise<number> {
+  async getNumberValue(key: string): Promise<number> {
     const stringValue = await this.getStringValue(key);
     return Number(stringValue);
   }

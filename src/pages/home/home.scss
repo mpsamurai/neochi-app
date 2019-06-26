@@ -1,3 +1,12 @@
 page-home {
-
+    ion-grid {
+        height: 100%;
+      
+        ion-row {
+          height: 50%;
+        }
+    }
+    canvas {
+        width: 100%;
+    }
 }
