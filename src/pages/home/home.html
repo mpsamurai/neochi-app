@@ -3,7 +3,7 @@
     <ion-title>ホーム</ion-title>
 
     <ion-buttons end>
-      <button ion-button [disabled]="isSaveButtonDisabled()" (click)="onClickSettings()">
+      <button ion-button (click)="onClickSettings()">
         <ion-icon name="cog"></ion-icon>
       </button>
     </ion-buttons>
@@ -12,17 +12,27 @@
 
 <ion-content padding>
 
-  <ion-label>neochi状態:-</ion-label>
+  <!--
+  <ion-list>
+    <ion-item>
+      <ion-label>neochi状態:-</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>学習が未実行です</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>リモコン信号が未記録です</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>アクションが未設定です</ion-label>
+    </ion-item>
+  </ion-list>
+  -->
 
   <ion-grid>
     <ion-row>
-      <ion-col>
-        <div class="c-image-panel">
-          <div class="inner"><canvas id="canvas" class="image"></canvas></div>
-        </div>
-      </ion-col>
-      <ion-col>
-        <canvas></canvas>
+      <ion-col class="image-col">
+        <canvas id="canvas" class="image-canvas"></canvas>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -37,16 +47,6 @@
     </ion-row>
   </ion-grid>
 
-  <ion-list>
-    <ion-item>
-      <ion-label>学習が未実行です</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>リモコン信号が未記録です</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>アクションが未設定です</ion-label>
-    </ion-item>
-  </ion-list>
+
 
 </ion-content>

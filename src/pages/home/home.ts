@@ -24,12 +24,14 @@ export default class HomePage {
   timer: Subscription;
   streamUrl: string;
 
-  pOnBedArray: number[];
-  pSleepArray: number[];
+  pOnBedArray: number[] = [];
+  pSleepArray: number[] = [];
 
   requestedImage: boolean;
   requestedPOnBed: boolean;
   requestedPSleep: boolean;
+
+  successiveNetworkErrorNum: number;
 
   // https://www.djamware.com/post/598953f880aca768e4d2b12b/creating-beautiful-charts-easily-using-ionic-3-and-angular-4
 
@@ -77,6 +79,7 @@ export default class HomePage {
     this.requestedImage = false;
     this.requestedPOnBed = false;
     this.requestedPSleep = false;
+    this.successiveNetworkErrorNum = 0;
   }
 
   ionViewDidEnter() {
@@ -110,20 +113,34 @@ export default class HomePage {
     }
   }
 
+  onNetworkSuccess() {
+    this.successiveNetworkErrorNum = 0;
+  }
+
+  onNetworkError() {
+    this.successiveNetworkErrorNum++;
+    if (this.successiveNetworkErrorNum >= 8) {
+      this.stopTimer();
+      this.presentNetworkErrorToast();
+    }
+  }
+
   onTimer() {
     console.log(`interval: ${new Date()}`)
 
     if (!this.requestedImage) {
       this.requestedImage = true;
       this.redisProvider.getJsonValue('eye:image').then(value => {
-        var w = value['width'];
-        var h = value['height'];
-        var rgbData = this.imageProvider.Base64a.decode(value['image']);
-        this.imageProvider.drawImageFromRGBdata(rgbData, w, h, 'canvas');
-
+        this.onNetworkSuccess();
+        if (value) {
+          var w = value['width'];
+          var h = value['height'];
+          var rgbData = this.imageProvider.Base64a.decode(value['image']);
+          this.imageProvider.drawImageFromRGBdata(rgbData, w, h, 'canvas');  
+        }
         this.requestedImage = false;
       }).catch(reason => {
-        this.presentNetworkErrorToast();
+        this.onNetworkError();
         this.requestedImage = false;
       });  
     }    
@@ -131,11 +148,12 @@ export default class HomePage {
     if (!this.requestedPOnBed) {
       this.requestedPOnBed = true;
       this.redisProvider.getNumberValue('brain:on-bed').then(value => {
+        this.onNetworkSuccess();
         this.pOnBedArray.unshift(value);
         this.pOnBedArray.pop();
         this.requestedPOnBed = false;
       }).catch(reason => {
-        this.presentNetworkErrorToast();
+        this.onNetworkError();
         this.requestedPOnBed = false;
       });  
     }    
@@ -143,11 +161,12 @@ export default class HomePage {
     if (!this.requestedPOnBed) {
       this.requestedPOnBed = true;
       this.redisProvider.getNumberValue('brain:on-bed').then(value => {
+        this.onNetworkSuccess();
         this.pOnBedArray.unshift(value);
         this.pOnBedArray.pop();
         this.requestedPOnBed = false;
       }).catch(reason => {
-        this.presentNetworkErrorToast();
+        this.onNetworkError();
         this.requestedPOnBed = false;
       });  
     }
@@ -155,22 +174,27 @@ export default class HomePage {
     if (!this.requestedPSleep) {
       this.requestedPSleep = true;
       this.redisProvider.getNumberValue('brain:sleeping-possibility').then(value => {
+        this.onNetworkSuccess();
         this.pSleepArray.unshift(value);
         this.pSleepArray.pop();
         this.requestedPSleep = false;
       }).catch(reason => {
-        this.presentNetworkErrorToast();
+        this.onNetworkError();
         this.requestedPSleep = false;
       });
     }
   }
 
-  getPLayDownDatasets() {
-    return [{data: this.pOnBedArray, label: 'Lay Down'}];
+  getPOnBedDatasets() {
+    return [{data: this.pOnBedArray, label: 'On Bed'}];
   }
 
   getPSleepDatasets() {
     return [{data: this.pSleepArray, label: 'Sleep'}];
+  }
+
+  onClickSettings() {
+    this.navCtrl.push('SettingsPage');
   }
 
 
