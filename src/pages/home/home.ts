@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { RedisProvider } from '../../providers/redis/redis';
 import { ImageProvider } from '../../providers/image/image';
+import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
  * Generated class for the HomePage page.
@@ -64,6 +65,7 @@ export default class HomePage {
     public navParams: NavParams,
     private toastCtrl: ToastController,
     private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider,
     private imageProvider: ImageProvider) {
     console.log('MonitoringPage constructor()');
   }
@@ -82,12 +84,20 @@ export default class HomePage {
     this.successiveNetworkErrorNum = 0;
   }
 
-  ionViewDidEnter() {
-    this.startTimer();
+  ionViewWillEnter() {
+    console.log("IrSignalPage.ionViewWillEnter()");    
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(() => {
+      this.startTimer();
+    }).catch(() => {
+    });
   }
 
-  ionViewDidLeave() {
+  ionViewWillLeave() {
+    console.log("IrSignalPage.ionViewWillLeave()");    
     this.stopTimer();
+    this.redisProvider.finalize().then(() => {
+    }).catch(() => {
+    });    
   }
 
   presentNetworkErrorToast() {
