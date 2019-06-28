@@ -13,28 +13,30 @@ declare const cordova: any;
 @Injectable()
 export class RedisProvider {
 
-  private static readonly REDIS_HOST = '192.168.0.20';
   private static readonly REDIS_PORT = 6379;
-  private static readonly WEBDIS_HOST = '192.168.0.20';
   private static readonly WEBDIS_PORT = 7379;
 
   private static readonly USES_WEBDIS = true;
 
   subXhrDict = {};
+  private redisHost: string;
+  private webdisHost: string;
 
   constructor(public http: HttpClient,
     private platform: Platform) {
   }
 
   private getWebdisBaseUrl(): string {
-    return 'http://' + RedisProvider.WEBDIS_HOST + ':' + RedisProvider.WEBDIS_PORT;
+    return 'http://' + this.webdisHost + ':' + RedisProvider.WEBDIS_PORT;
   }
 
-  async initialize(): Promise<void> {
+  async initialize(redisHost: string): Promise<void> {
+    this.redisHost = redisHost;
+    this.webdisHost = redisHost;
     if (this.platform.is('cordova') && !RedisProvider.USES_WEBDIS) {
       return new Promise<void>((resolve, reject) => {
         cordova.plugins.Redis.initialize(
-          RedisProvider.REDIS_HOST,
+          this.redisHost,
           RedisProvider.REDIS_PORT,
           (winParam) => {
             console.log('RedisProvider.initialize() winParam:', winParam);

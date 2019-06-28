@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { IonicPage, NavController } from 'ionic-angular';
+import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
  * Generated class for the SettingsPage page.
@@ -15,28 +15,38 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
   templateUrl: 'settings.html',
 })
 export class SettingsPage {
-  /** フォーム項目 */
-  form: FormGroup;
-  /** フォーム項目のエラーテキスト */
-  errors = {};
-  /** フォーム項目名 */
-  controlNames = {
-    ipaddr: "xx.xxx.xxx.xxx",
-    port: "nnn"
-  };
+
+  ipAddressInputValue: string;
+  areContentsChanged: boolean;
   
   constructor(
     public navCtrl: NavController,
-    navParams: NavParams,
-    public formBuilder: FormBuilder) {
-    this.form = this.formBuilder.group({
-      // 項目名: [初期値, ルール]
-      ipaddr: ["", Validators.required],
-      port: ["", [ Validators.required ]]
-    });
+    private neochiProvider: NeochiProvider) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
+    this.areContentsChanged = false;
   }
+
+  ionViewWillEnter() {
+    this.ipAddressInputValue = this.neochiProvider.getNeochiIpAddress();
+  }
+
+  isSaveButtonDisabled() {
+    return !this.areContentsChanged;
+  }
+
+  onInputIpAddress() {
+    this.areContentsChanged = true;    
+  }
+
+  onClickSave() {
+    if (!this.ipAddressInputValue || this.ipAddressInputValue.length === 0) {
+      this.ipAddressInputValue = this.neochiProvider.getDefaultNeochiIpAddress();
+    }
+    this.neochiProvider.setNeochiIpAddress(this.ipAddressInputValue);
+    this.areContentsChanged = false;
+  }
+
 }

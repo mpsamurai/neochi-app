@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { RedisProvider } from '../../providers/redis/redis';
+import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
  * Generated class for the RedisSamplePage page.
@@ -18,14 +19,15 @@ export class RedisSamplePage {
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
-    private redisProvider: RedisProvider) {
+    private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider) {
   }
 
   ionViewDidLoad() {
   }
 
   ionViewWillEnter() {
-    this.redisProvider.initialize().then(() => {
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(() => {
     }).catch(() => {
     });
   }

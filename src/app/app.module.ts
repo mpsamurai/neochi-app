@@ -11,6 +11,7 @@ import { RedisProvider } from '../providers/redis/redis';
 import { HttpClientModule } from '@angular/common/http';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ImageProvider } from '../providers/image/image';
+import { NeochiProvider } from '../providers/neochi/neochi';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ImageProvider } from '../providers/image/image';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     RedisProvider,
-    ImageProvider
+    ImageProvider,
+    NeochiProvider
   ]
 })
 export class AppModule {}

@@ -4,6 +4,7 @@ import { ShowPageComponent } from '../show/show.component';
 import { RedisProvider } from '../../../providers/redis/redis';
 import { ActionSet } from '../../../interfaces/action-set';
 import { NAV_PARAMS_PARAM_NAME, ActionSetPageNavParams } from '../../../interfaces/neochi';
+import { NeochiProvider } from '../../../providers/neochi/neochi';
 
 enum PageState {
   Booting,
@@ -30,7 +31,8 @@ export class IndexPageComponent {
 
   constructor(
     public navCtrl: NavController,
-    private redisProvider: RedisProvider
+    private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider
   ) {
   }
 
@@ -42,7 +44,7 @@ export class IndexPageComponent {
 
   ionViewWillEnter() {
     console.log("IrSignalListPage.ionViewWillEnter()");
-    this.redisProvider.initialize().then(() => {
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(() => {
       this.updateActionSetList();
     }).catch(() => {
     });

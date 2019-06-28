@@ -5,6 +5,7 @@ import { RedisProvider } from '../../../providers/redis/redis';
 import { ActionSet } from '../../../interfaces/action-set';
 import { IrSignal } from '../../../interfaces/ir-signal';
 import { Action } from '../../../interfaces/action';
+import { NeochiProvider } from '../../../providers/neochi/neochi';
 
 enum PageState {
   Booting,
@@ -31,6 +32,7 @@ export class ShowPageComponent {
     public navCtrl: NavController,
     private navParams: NavParams,
     private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider,
     private alertCtrl: AlertController) {
   }
 
@@ -44,7 +46,7 @@ export class ShowPageComponent {
 
   ionViewWillEnter() {
     console.log("IrSignalListPage.ionViewWillEnter()");
-    this.redisProvider.initialize().then(async () => {
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(async () => {
       const b1 = await this.updateActionSet();
       const b2 = await this.updateIrSignals();
       if (b1 && b2) {

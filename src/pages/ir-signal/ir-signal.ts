@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { RedisProvider } from '../../providers/redis/redis';
 import { IrSignalPageNavParams, NAV_PARAMS_PARAM_NAME } from '../../interfaces/neochi';
 import { IrSignal } from '../../interfaces/ir-signal';
+import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
  * Generated class for the IrSignalPage page.
@@ -47,7 +48,8 @@ export class IrSignalPage {
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
-    private redisProvider: RedisProvider) {
+    private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider) {
   }
 
   ionViewDidLoad() {
@@ -73,7 +75,7 @@ export class IrSignalPage {
 
   ionViewWillEnter() {
     console.log("IrSignalPage.ionViewWillEnter()");    
-    this.redisProvider.initialize().then(() => {
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(() => {
       this.checkIrSenderReceiverState();
       this.redisSubscribe();
     }).catch(() => {
