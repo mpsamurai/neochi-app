@@ -110,7 +110,7 @@ export default class HomePage {
 
   startTimer() {
     if (!this.timer) {
-      this.timer = TimerObservable.create(0, 1000).subscribe(() => {
+      this.timer = TimerObservable.create(0, 500).subscribe(() => {
         this.onTimer();
       });
     }
