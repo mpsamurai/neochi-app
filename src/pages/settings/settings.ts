@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
+import { IonicPage, NavController, AlertController } from 'ionic-angular';
 import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
@@ -18,19 +18,51 @@ export class SettingsPage {
 
   ipAddressInputValue: string;
   areContentsChanged: boolean;
+
+  checksContentsChange: boolean;
   
   constructor(
     public navCtrl: NavController,
+    private alertController: AlertController,
     private neochiProvider: NeochiProvider) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
     this.areContentsChanged = false;
+    this.checksContentsChange = true;
   }
 
   ionViewWillEnter() {
     this.ipAddressInputValue = this.neochiProvider.getNeochiIpAddress();
+  }
+
+  ionViewCanLeave(): boolean{
+    // 画面を抜けるときに見て変更があれば保存するか問う
+    if (this.checksContentsChange && this.areContentsChanged){
+      const alert = this.alertController.create({
+        title: '変更を保存せずに戻りますか?',
+        buttons: [
+          {
+            text: 'キャンセル',
+            role: 'cancel',
+            handler: data => {
+            }
+          },
+          {
+            text: 'OK',
+            handler: data => {
+              this.checksContentsChange = false;
+              this.navCtrl.pop();
+            }
+          }
+        ]
+      });
+      alert.present();
+      return false;
+    } else {
+      return true;
+    }
   }
 
   isSaveButtonDisabled() {

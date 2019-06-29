@@ -28,8 +28,11 @@ export class ShowPageComponent {
 
   isActionSetChanged: boolean;
 
+  checksContentsChange: boolean;
+
   constructor(
     public navCtrl: NavController,
+    private alertController: AlertController,
     private navParams: NavParams,
     private redisProvider: RedisProvider,
     private neochiProvider: NeochiProvider,
@@ -42,6 +45,7 @@ export class ShowPageComponent {
       this.actionSetId = params.id;
     }
     this.isActionSetChanged = false;
+    this.checksContentsChange = true;
   }
 
   ionViewWillEnter() {
@@ -64,6 +68,34 @@ export class ShowPageComponent {
     }).catch(() => {
     });    
   }
+
+  ionViewCanLeave(): boolean{
+    // 画面を抜けるときに見て変更があれば保存するか問う
+    if (this.checksContentsChange && this.isActionSetChanged){
+      const alert = this.alertController.create({
+        title: '変更を保存せずに戻りますか?',
+        buttons: [
+          {
+            text: 'キャンセル',
+            role: 'cancel',
+            handler: data => {
+            }
+          },
+          {
+            text: 'OK',
+            handler: data => {
+              this.checksContentsChange = false;
+              this.navCtrl.pop();
+            }
+          }
+        ]
+      });
+      alert.present();
+      return false;
+    } else {
+      return true;
+    }
+  }  
 
   async updateActionSet(): Promise<boolean> {
     let json: object;

@@ -8,24 +8,17 @@
 
 <ion-content>
   <ion-list>
-    <ion-list-header>
-      赤外線信号一覧
-    </ion-list-header>
-
-    <ion-item *ngFor="let irSignal of irSignals">
+    <ion-item *ngFor="let irSignal of irSignals" (click)=onClickDetail(irSignal)>
       <ion-icon name="ionic"
                 item-start
                 color="primary"></ion-icon>
-
       <ion-label>{{irSignal.name}}</ion-label>
-
-      <button ion-button
-              outline
-              item-end
-              (click)="onClickDetail(irSignal)">詳細</button>
     </ion-item>
+    <ion-item *ngIf="pageState === pageStateEnum.Error">
+      <ion-label>neochiへの接続に失敗しました</ion-label>
+    </ion-item>    
   </ion-list>
   <ion-fab right bottom>
-    <button ion-fab color="light" (click)="onClickAdd()"><ion-icon name="add"></ion-icon></button>
+    <button ion-fab color="light" [disabled]="isAddButtonDisabled()" (click)="onClickAdd()"><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 </ion-content>

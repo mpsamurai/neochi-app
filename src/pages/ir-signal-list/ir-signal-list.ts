@@ -12,13 +12,21 @@ import { NeochiProvider } from '../../providers/neochi/neochi';
  * Ionic pages and navigation.
  */
 
+enum PageState {
+  Booting,
+  Ready,
+  Error
+}
+
 @IonicPage()
 @Component({
   selector: 'page-ir-signal-list',
   templateUrl: 'ir-signal-list.html',
 })
 export class IrSignalListPage {
+  pageStateEnum: typeof PageState = PageState;
 
+  pageState: PageState;
   irSignals: IrSignal[];
 
   constructor(public navCtrl: NavController, 
@@ -29,6 +37,7 @@ export class IrSignalListPage {
   }
 
   ionViewDidLoad() {
+    this.pageState = PageState.Booting;
     this.irSignals = [];
   }
 
@@ -53,10 +62,12 @@ export class IrSignalListPage {
       json = await this.redisProvider.getJsonValue('ir-receiver:ir');      
     } catch (error) {
       console.log("error:", error);
+      this.pageState = PageState.Error;
       this.irSignals = [];
       return;
     }
     if (!json || !json.hasOwnProperty('signals')) {
+      this.pageState = PageState.Error;
       this.irSignals = [];
       return;
     }
@@ -72,6 +83,7 @@ export class IrSignalListPage {
       };
       this.irSignals.push(irSignal);
     });
+    this.pageState = PageState.Ready;
   }
 
   onClickDetail(irSignal: IrSignal) {
@@ -79,6 +91,14 @@ export class IrSignalListPage {
       irSignal: irSignal,
     };    
     this.navCtrl.push('IrSignalPage', {[NAV_PARAMS_PARAM_NAME]: params});
+  }
+
+  isAddButtonDisabled() {
+    if (this.pageState === PageState.Ready) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   onClickAdd() {

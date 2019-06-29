@@ -58,8 +58,6 @@ export class IndexPageComponent {
   }
 
   async updateActionSetList() {
-    this.actionSets = [];
-
     let json: object;
     try {
       json = await this.redisProvider.getJsonValue('neochi-app:action');
@@ -70,9 +68,11 @@ export class IndexPageComponent {
     } catch (error) {
       console.log("updateActionSetList() error:", error);
       this.pageState = PageState.Error;
+      this.actionSets = [];
       return;
     }
 
+    this.actionSets = [];
     json['actionSets'].forEach(actionSetObject => {
       let actionSet: ActionSet = {
         id: actionSetObject['id'],

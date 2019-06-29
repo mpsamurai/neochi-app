@@ -5,10 +5,10 @@
     </ion-title>
 
     <ion-buttons end>
-      <button ion-button [disabled]="isDeleteButtonDisabled()" (click)="onClickDelete()">
+      <button ion-button icon-only [disabled]="isDeleteButtonDisabled()" (click)="onClickDelete()">
         <ion-icon name="trash"></ion-icon>
       </button>
-      <button ion-button [disabled]="isSaveButtonDisabled()" (click)="onClickSave()">
+      <button ion-button icon-only [disabled]="isSaveButtonDisabled()" (click)="onClickSave()">
         <ion-icon name="checkmark-circle"></ion-icon>
       </button>      
     </ion-buttons>
