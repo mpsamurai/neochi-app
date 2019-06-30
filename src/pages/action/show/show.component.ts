@@ -192,6 +192,8 @@ export class ShowPageComponent {
       'actionSets': this.actionSets,
     };
     this.redisProvider.setJsonValue('neochi-app:action', json).then(() => {
+      // サーバーからの保存完了のメッセージを受けて保存する
+      this.isActionSetChanged = false;
       this.navCtrl.pop();
     }).catch((reason)=>{
       console.log('onClickSave() reason:', reason);

@@ -191,6 +191,7 @@ export class IrSignalPage {
       } else if (title === 'saved_ir_signal') {
         // 保存完了のメッセージを受けて前の画面に戻る
         // (戻らない場合はthis.irSignalの内容更新が必要)
+        this.areContentsChanged = true;
         this.navCtrl.pop();
       } else if (title === 'ir_signal_saving_error') {
         this.presentErrorToast('保存に失敗しました');

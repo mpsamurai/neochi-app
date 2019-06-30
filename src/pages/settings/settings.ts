@@ -79,6 +79,7 @@ export class SettingsPage {
     }
     this.neochiProvider.setNeochiIpAddress(this.ipAddressInputValue);
     this.areContentsChanged = false;
+    this.navCtrl.pop();
   }
 
 }
