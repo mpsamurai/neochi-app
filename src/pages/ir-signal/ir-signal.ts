@@ -191,7 +191,8 @@ export class IrSignalPage {
       } else if (title === 'saved_ir_signal') {
         // 保存完了のメッセージを受けて前の画面に戻る
         // (戻らない場合はthis.irSignalの内容更新が必要)
-        this.areContentsChanged = true;
+        this.areContentsChanged = false;
+        this.isIrSignalRecorded = false;
         this.navCtrl.pop();
       } else if (title === 'ir_signal_saving_error') {
         this.presentErrorToast('保存に失敗しました');
@@ -283,7 +284,7 @@ export class IrSignalPage {
       title: "save_ir_signal", 
       id: this.irSignal.id,
       name: this.nameInputValue,
-      sleep: Number(this.sleepInputValue),
+      sleep: Number(this.sleepInputValue) * 1000,
       updatesFile: this.isIrSignalRecorded,
     };
     this.redisProvider.publish('neochi-app:ir-receiver', JSON.stringify(message)).then(() => {
