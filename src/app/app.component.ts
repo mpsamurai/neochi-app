@@ -11,6 +11,7 @@ import { TabsPage } from '../pages/tabs/tabs';
 export class MyApp {
   rootPage: any = TabsPage;
   //rootPage: any = 'RedisSamplePage';
+  //rootPage: any = 'LayoutSamplePage';
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {
