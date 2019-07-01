@@ -74,7 +74,7 @@ export class IrSignalPage {
     if (params) {
       this.irSignal = params.irSignal;
       this.nameInputValue = this.irSignal.name;
-      this.sleepInputValue = String(this.irSignal.sleep);
+      this.sleepInputValue = String(this.irSignal.sleep / 1000);
     }    
 
   }
