@@ -8,6 +8,7 @@
       <button ion-button icon-only [disabled]="isDeleteButtonDisabled()" (click)="onClickDelete()">
         <ion-icon name="trash"></ion-icon>
       </button>
+      <button ion-button class="spacer-bar-button"></button>
       <button ion-button icon-only [disabled]="isSaveButtonDisabled()" (click)="onClickSave()">
         <ion-icon name="checkmark-circle"></ion-icon>
       </button>      
@@ -31,8 +32,19 @@
       <ion-label>{{getIrSignalStateLabel()}}</ion-label>
     </ion-item>
   </ion-list>
-  <button ion-button [disabled]="isReceiveButtonDisabled()" (click)="onClickReceive()" block>{{getReceiveButtonLabel()}}</button>
-  <button ion-button [disabled]="isSendButtonDisabled()" (click)="onClickSend()" block>テスト送信</button>
+
+  <ion-grid class="no-padding">
+    <ion-row>
+      <ion-col class="no-padding">
+        <button ion-button [disabled]="isReceiveButtonDisabled()" (click)="onClickReceive()" block>{{getReceiveButtonLabel()}}</button>
+      </ion-col>
+    </ion-row>  
+    <ion-row>
+      <ion-col class="padding-top">
+        <button ion-button [disabled]="isSendButtonDisabled()" (click)="onClickSend()" block>テスト送信</button>
+      </ion-col>
+    </ion-row>  
+  </ion-grid>
   
   <ion-label>{{getIrReceivingMessage()}}</ion-label>
   <ion-label>{{getIrSendingMessage()}}</ion-label>
