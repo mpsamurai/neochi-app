@@ -18,7 +18,7 @@
     <ng-container *ngFor="let action of actionSet.actions; let i = index; let isLast = last;">
       <ion-item>
         <ion-label>{{irSignals[action.parameters['id']].name}}</ion-label>
-        <button ion-button clear item-end (click)="onClickRemove(i)">
+        <button ion-button clear item-end icon-only (click)="onClickRemove(i)">
           <ion-icon name="close-circle"></ion-icon>
         </button>
       </ion-item>
