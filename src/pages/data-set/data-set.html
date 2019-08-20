@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-navbar>
+      <ion-title>
+        {{dataSet?.name}}
+      </ion-title>
+
+      <ion-buttons end>
+        <button ion-button icon-only [disabled]="isDeleteButtonDisabled()" (click)="onClickDelete()">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+        <button ion-button class="spacer-bar-button"></button>
+        <button ion-button icon-only [disabled]="isRenameButtonDisabled()" (click)="onClickRename()">
+          <ion-icon name="create"></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+
+
+  </ion-header>
+  
+  <ion-content>
+    <ion-list>
+      <ion-item *ngFor="let dataListItem of dataList" (click)=onClickDetail(dataListItem)>
+        <ion-icon name="ionic"
+                  item-start
+                  color="primary"></ion-icon>
+        <ion-label>{{dataListItem.timeStampString}}</ion-label>
+        <ion-badge>{{dataListItem.labelString}}</ion-badge>
+      </ion-item>
+    </ion-list>
+    <ion-fab right bottom>
+    </ion-fab>
+  </ion-content>
+  

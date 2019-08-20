@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { IndexPageComponent as DetectionIndexPageComponent } from '../../pages/detection/index/index.component';
 import { IndexPageComponent as ActionIndexPageComponent } from '../../pages/action/index/index.component';
 
 @Component({
@@ -7,7 +6,7 @@ import { IndexPageComponent as ActionIndexPageComponent } from '../../pages/acti
 })
 export class TabsPage {
   tab1Root = 'HomePage';
-  tab2Root = DetectionIndexPageComponent;
+  tab2Root = 'DataSetListPage';
   tab3Root = 'IrSignalListPage';
   tab4Root = ActionIndexPageComponent;
 

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DataSet } from '../../interfaces/neochi';
 
 /*
   Generated class for the NeochiProvider provider.
@@ -31,4 +32,24 @@ export class NeochiProvider {
   setNeochiIpAddress(ipAddress: string) {
     localStorage.setItem('neochiIpAddress', ipAddress);
   }
+
+  getDataSets(): DataSet[] {
+    let dataSets = [];
+    let jsonString = localStorage.getItem('dataSets');
+    if (jsonString !== null) {
+      let json = JSON.parse(jsonString);
+      if (json.hasOwnProperty('dataSets')) {
+        dataSets = json.dataSets;
+      }
+    }
+    return dataSets;
+  }
+
+  setDataSets(dataSets: DataSet[]) {
+    const object = { 
+      dataSets: dataSets
+    };
+    localStorage.setItem('dataSets', JSON.stringify(object));
+  }  
+
 }

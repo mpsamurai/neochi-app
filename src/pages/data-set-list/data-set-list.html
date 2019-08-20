@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      検出
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>データセット</ion-label>
+    </ion-list-header>    
+    <ion-item *ngFor="let dataSet of dataSets" (click)=onClickDetail(dataSet)>
+      <ion-icon name="ionic"
+                item-start
+                color="primary"></ion-icon>
+      <ion-label>{{dataSet.name}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-fab right bottom>
+    <button ion-fab color="light" [disabled]="isAddButtonDisabled()" (click)="onClickAdd()"><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+</ion-content>
