@@ -12,6 +12,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ImageProvider } from '../providers/image/image';
 import { NeochiProvider } from '../providers/neochi/neochi';
+import { FileProvider } from '../providers/file/file';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,7 @@ import { NeochiProvider } from '../providers/neochi/neochi';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HttpClientModule,    
+    HttpClientModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -36,7 +37,8 @@ import { NeochiProvider } from '../providers/neochi/neochi';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     RedisProvider,
     ImageProvider,
-    NeochiProvider
+    NeochiProvider,
+    FileProvider,
   ]
 })
 export class AppModule {}

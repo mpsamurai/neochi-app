@@ -21,14 +21,18 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/core": "~4.15.0",
+    "@ionic-native/file": "^5.12.0",
     "@ionic-native/splash-screen": "~4.15.0",
     "@ionic-native/status-bar": "~4.15.0",
     "@ionic/storage": "2.2.0",
     "ajv-keywords": "^3.4.0",
     "chart.js": "^2.8.0",
+    "cordova": "^9.0.0",
     "cordova-android": "8.0.0",
     "cordova-ios": "5.0.1",
+    "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-redis": "file:../cordova-plugin-redis",
+    "ionic": "^5.2.5",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
     "ng2-charts": "^1.6.0",
@@ -58,7 +62,8 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-redis": {}
+      "cordova-plugin-redis": {},
+      "cordova-plugin-file": {}
     },
     "platforms": [
       "ios",

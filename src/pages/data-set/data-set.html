@@ -12,6 +12,10 @@
         <button ion-button icon-only [disabled]="isRenameButtonDisabled()" (click)="onClickRename()">
           <ion-icon name="create"></ion-icon>
         </button>
+        <button ion-button class="spacer-bar-button"></button>
+        <button ion-button icon-only [disabled]="isRenameButtonDisabled()" (click)="onClickTrain()">
+          <ion-icon name="custom-fitness-center"></ion-icon>
+        </button>
       </ion-buttons>
     </ion-navbar>
 
@@ -20,7 +24,7 @@
   
   <ion-content>
     <ion-list>
-      <ion-item *ngFor="let dataListItem of dataList" (click)=onClickDetail(dataListItem)>
+      <ion-item *ngFor="let dataListItem of dataList" (click)="onClickDetail(dataListItem)">
         <ion-icon name="ionic"
                   item-start
                   color="primary"></ion-icon>
@@ -28,7 +32,15 @@
         <ion-badge>{{dataListItem.labelString}}</ion-badge>
       </ion-item>
     </ion-list>
+
     <ion-fab right bottom>
+      <button ion-fab><ion-icon name="menu"></ion-icon></button>
+      <ion-fab-list side="top">
+        <button ion-fab><ion-icon name="add" (click)="onClickAddData()"></ion-icon></button>
+        <button ion-fab><ion-icon name="trash" (click)="onClickRemoveData()"></ion-icon></button>
+        <button ion-fab><ion-icon name="custom-filter-list" (click)="onClickFilterData()"></ion-icon></button>
+      </ion-fab-list>
     </ion-fab>
+
   </ion-content>
   
