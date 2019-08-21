@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 import { DataSetPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, DataAdditionPageNavParams, LABEL_AWAKE, LABEL_SLEEPING } from '../../interfaces/neochi';
 import { NeochiProvider } from '../../providers/neochi/neochi';
 import { FileProvider } from '../../providers/file/file';
-import { File } from '@ionic-native/file/ngx';
+import { File } from '@ionic-native/file';
 
 /**
  * Generated class for the DataSetPage page.
@@ -31,7 +31,7 @@ export class DataSetPage {
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
-    private  alertController: AlertController,
+    private alertController: AlertController,
     private neochiProvider: NeochiProvider,
     private fileProvider: FileProvider,
     private file: File) {    
@@ -58,11 +58,14 @@ export class DataSetPage {
     try {
       const labelsObject = await this.loadLabelsObject(this.dataSet.id);
       console.log("labelsObject:", labelsObject);
+      if (!labelsObject) {
+        return;
+      }
+
+      // TODO サムネイルの表示
 
       const labels = labelsObject['labels'];
-  
-      // TODO サムネイルの表示
-  
+ 
       for (let index = 0; index < labels.length; index++) {
         const element = labels[index];
         const dataListItem = {
@@ -77,6 +80,8 @@ export class DataSetPage {
 
   }
 
+  // labels.json からラベルをロードする
+  // ファイルが無ければnullを返す
   async loadLabelsObject(dataSetId: number): Promise<Object> {
     console.log("loadLabelsObject()");
 
@@ -85,29 +90,42 @@ export class DataSetPage {
     const dirEntry = await this.file.resolveDirectoryUrl(this.file.dataDirectory);
     console.log("dirEntry:", dirEntry);
 
+    try {
+      console.log("dirEntry.nativeURL:", dirEntry.nativeURL);
+      await this.file.checkDir(dirEntry.nativeURL, FileProvider.DATA_SETS_DIRECTORY_NAME);
+      console.log("existing");
+    } catch (error) {
+      console.log("not existing");
+      return null;
+    }
     let dataSetsDirectoryEntry = await this.file.getDirectory(dirEntry, FileProvider.DATA_SETS_DIRECTORY_NAME, { create: false });
     console.log("dataSetsDirectoryEntry:", dataSetsDirectoryEntry);
 
     let dataSetDirName = String(dataSetId);
+    try {
+      console.log("dataSetsDirectoryEntry.nativeURL:", dataSetsDirectoryEntry.nativeURL);
+      await this.file.checkDir(dataSetsDirectoryEntry.nativeURL, dataSetDirName);
+      console.log("existing");
+    } catch (error) {
+      console.log("not existing");
+      return null;
+    }
     let dataSetDirectoryEntry = await this.file.getDirectory(dataSetsDirectoryEntry, dataSetDirName, { create: false });
 
     // labels.json を読み込み(なければ空のオブジェクトを作成)
     const labelsFileName = FileProvider.LABELS_FILE_NAME;
-    let exists = false;
     try {
-      await this.file.checkFile(dataSetDirectoryEntry.fullPath, labelsFileName);
-      exists = true;
+      console.log("dataSetDirectoryEntry.nativeURL:", dataSetDirectoryEntry.nativeURL);
+      await this.file.checkFile(dataSetDirectoryEntry.nativeURL, labelsFileName);
+      console.log("existing");
     } catch (error) {
-      exists = false;
+      console.log("not existing");
+      return null;
     }
-    let labelsObject: Object;
-    if (exists) {
-      let labelsFileEntry = await this.file.getFile(dataSetDirectoryEntry, labelsFileName, { create: false });
-      labelsObject = await this.fileProvider.readObjectFromFile(labelsFileEntry);  
-    } else {
-      labelsObject = { labels: [] };
-    }
-    return labelsObject;
+    let labelsFileEntry = await this.file.getFile(dataSetDirectoryEntry, labelsFileName, { create: false });
+
+    let s = await this.fileProvider.readStringFromFile(labelsFileEntry);      
+    return JSON.parse(s);
   }
 
   async onClickDelete() {

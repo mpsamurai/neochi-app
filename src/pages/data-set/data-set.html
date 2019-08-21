@@ -36,9 +36,9 @@
     <ion-fab right bottom>
       <button ion-fab><ion-icon name="menu"></ion-icon></button>
       <ion-fab-list side="top">
-        <button ion-fab><ion-icon name="add" (click)="onClickAddData()"></ion-icon></button>
-        <button ion-fab><ion-icon name="trash" (click)="onClickRemoveData()"></ion-icon></button>
-        <button ion-fab><ion-icon name="custom-filter-list" (click)="onClickFilterData()"></ion-icon></button>
+        <button ion-fab (click)="onClickAddData()"><ion-icon name="add"></ion-icon></button>
+        <button ion-fab (click)="onClickRemoveData()"><ion-icon name="trash"></ion-icon></button>
+        <button ion-fab (click)="onClickFilterData()"><ion-icon name="custom-filter-list"></ion-icon></button>
       </ion-fab-list>
     </ion-fab>
 

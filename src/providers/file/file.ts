@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@ionic-native/file/ngx';
+import { FileEntry } from '@ionic-native/file';
 
 /*
   Generated class for the FileProvider provider.
@@ -38,13 +38,13 @@ export class FileProvider {
     });
   }  
 
-  readObjectFromFile(fileEntry: FileEntry): Promise<any> {
-    return new Promise<void>((resolve, reject) => {
+  readStringFromFile(fileEntry: FileEntry): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       fileEntry.file(function (file) {
         var reader = new FileReader();
   
         reader.onloadend = function() {
-          resolve(JSON.parse(String(this.result)));
+          resolve(String(this.result));
         };
         reader.onerror = function (e) {
           reject(e);

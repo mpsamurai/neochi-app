@@ -4,7 +4,7 @@ import { DataAdditionPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, LABEL_AWAKE,
 import { Subscription } from 'rxjs/Subscription';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { ImageProvider } from '../../providers/image/image';
-import { File } from '@ionic-native/file/ngx';
+import { File } from '@ionic-native/file';
 import { FileProvider } from '../../providers/file/file';
 
 /**
@@ -71,7 +71,7 @@ export class DataAdditionPage {
     }
   }
   
-  onCaptureTimer() {
+  async onCaptureTimer() {
     // TODO 画像のRedisからの取得
     const imageObject = {
       width: 1,
@@ -80,7 +80,6 @@ export class DataAdditionPage {
       image: this.imageProvider.Base64a.encode(new Uint8Array(3)),
       timeStamp: (new Date()).getTime() / 1000,
     };
-    console.log("imageObject:", imageObject);
 
     const value = imageObject;
     var w = value['width'];
@@ -103,7 +102,12 @@ export class DataAdditionPage {
           this.loading = null;
         }
  
-        this.addImagesToDataSet(this.dataSet.id, this.capturingImageObjects, this.capturingImageLabel);
+        try {
+          await this.addImagesToDataSet(this.dataSet.id, this.capturingImageObjects, this.capturingImageLabel);
+        } catch (error) {
+          console.log("error:", error);
+        }
+
       }
     }
 
@@ -144,22 +148,29 @@ export class DataAdditionPage {
   // <yyyymmddThhmmss.sss> は imageObjects のはじめの要素の timeStamp から作る
   // image_<yyyymmddThhmmss.sss>.json は imageObjects の各要素の timeStamp から作る
   private async addImagesToDataSet(dataSetId: number, imageObjects: Object[], label: string) {
+    console.log("addImagesToDataSet()");
+
     if (imageObjects.length < 1 || imageObjects.length < UNIT_IMAGE_NUMBER) {
       return;
     }
 
     const dirEntry = await this.file.resolveDirectoryUrl(this.file.dataDirectory);
+    console.log("dirEntry:", dirEntry);
 
     // data-setsディレクトリーがなければ作成
     let dataSetsDirectoryEntry = await this.file.getDirectory(dirEntry, FileProvider.DATA_SETS_DIRECTORY_NAME, { create: true });
+    console.log("dataSetsDirectoryEntry:", dataSetsDirectoryEntry);
 
     // <dataSetId> のディレクトリーがなければ作成
     let dataSetDirName = String(dataSetId);
     let dataSetDirectoryEntry = await this.file.getDirectory(dataSetsDirectoryEntry, dataSetDirName, { create: true });
+    console.log("dataSetDirectoryEntry:", dataSetDirectoryEntry);
 
     // <yyyymmddThhmmss.sss> のディレクトリーがなければ作成
     let dataDirName = this.isoStringToFileNamePart(this.imageObjectTimeStampToIsoString(imageObjects[0]['timeStamp']));
     let dataDirectoryEntry = await this.file.getDirectory(dataSetDirectoryEntry, dataDirName, { create: true });
+    console.log("dataDirName:", dataDirName);
+    console.log("dataDirectoryEntry:", dataDirectoryEntry);
 
     // image_<yyyymmddThhmmss.sss>.json のファイルを作成
     for (let index = 0; index < imageObjects.length; index++) {
@@ -175,18 +186,22 @@ export class DataAdditionPage {
     const labelsFileName = FileProvider.LABELS_FILE_NAME;
     let exists = false;
     try {
-      await this.file.checkFile(dataSetDirectoryEntry.fullPath, labelsFileName);
+      await this.file.checkFile(dataSetDirectoryEntry.nativeURL, labelsFileName);
       exists = true;
+      console.log("existing");
     } catch (error) {
       exists = false;
+      console.log("not existing");
     }
     let labelsObject: Object;
     if (exists) {
       let labelsFileEntry = await this.file.getFile(dataSetDirectoryEntry, labelsFileName, { create: false });
-      labelsObject = await this.fileProvider.readObjectFromFile(labelsFileEntry);  
+      let s = await this.fileProvider.readStringFromFile(labelsFileEntry);  
+      labelsObject = JSON.parse(s);
     } else {
       labelsObject = { labels: [] };
     }
+    console.log("labelsObject:", labelsObject);
 
     // labelsの存在を確認し、なければ追加
     if (!labelsObject.hasOwnProperty('labels')) {
@@ -199,13 +214,13 @@ export class DataAdditionPage {
       label: label,
     });
 
+    console.log("labelsObject:", labelsObject);
+
     // labels.json に書き戻し
     let labelsFileEntry = await this.file.getFile(dataSetDirectoryEntry, labelsFileName, { create: true });
     await this.fileProvider.writeObjectToFile(labelsFileEntry, labelsObject);
 
     // TODO サムネイルの保存
-    // 
-
   }
 
 

@@ -1,4 +1,4 @@
-import { File } from '@ionic-native/file/ngx';
+import { File } from '@ionic-native/file';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { DataAdditionPage } from './data-addition';
