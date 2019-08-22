@@ -251,6 +251,8 @@ export class DataSetPage {
   }
 
   async createZipFile(dataSetId: number): Promise<void> {
+    console.log("createZipFile()");
+
     const dataSetsDirectoryPath = this.fileProvider.joinNativeUrl(this.file.dataDirectory, 
       [FileProvider.DATA_SETS_DIRECTORY_NAME], true);
 
@@ -264,11 +266,13 @@ export class DataSetPage {
     let zipFilePath = this.fileProvider.joinNativeUrl(dataSetsDirectoryPath, 
       [zipFileName], false);
 
+    console.log("zipFilePath:", zipFilePath);
+
     const zeep = (<any>window).Zeep;
     return new Promise<void>((resolve, reject) => {
       zeep.zip({
-        from : dataSetDirectoryPath,
-        to   : zipFilePath,
+        from: dataSetDirectoryPath,
+        to: zipFilePath,
       }, () => {
         resolve();
       }, function(e) {
@@ -278,6 +282,8 @@ export class DataSetPage {
   }
 
   async uploadZipFile(dataSetId: number): Promise<void> {
+    console.log("uploadZipFile()");
+
     const dataSetDirName = String(dataSetId);
     const zipFileName = dataSetDirName + '.zip';
 
@@ -289,19 +295,33 @@ export class DataSetPage {
 
     const zipFileEntry = await this.file.getFile(dataSetsDirectoryEntry, zipFileName, { create: false });
 
+    // 確認用にコピー → エラーは起きないがファイラーからファイルが見つからない
+    //const copiedZipFileEntry = await this.file.copyFile(dataSetsDirectoryEntry.nativeURL, zipFileName, this.file.externalDataDirectory, zipFileName);
+    //console.log('copiedZipFileEntry:', copiedZipFileEntry);
+
     return new Promise<void>((resolve, reject) => {
-      zipFileEntry.file(fileToUpload => {
-        const endpoint = 'your-destination-url';
-        const formData: FormData = new FormData();
-        formData.append(zipFileName, fileToUpload, fileToUpload.name);
-        this.httpClient
-          .post(endpoint, formData).subscribe(data => {
+      zipFileEntry.file(resFile => {
+        var reader = new FileReader();
+        reader.onloadend = (evt: any) => {
+          console.log("evt.target.result:", evt.target.result);
+
+          var zipBlob: any = new Blob([evt.target.result], { type: 'application/zip' });
+          zipBlob.name = zipFileName;
+          const endpoint = 'http://192.168.0.13:8080/upload-file';
+          const formData: FormData = new FormData();
+          formData.append(zipFileName, zipBlob, zipBlob.name);
+          this.httpClient.post(endpoint, formData).subscribe(data => {
             console.log("data:", data);
             resolve();
           }, error => {
-            console.log("error:", error);
             reject(error);
           });
+        };
+        reader.onerror = e => {
+          console.log('Failed file read:', e);
+          reject(e);
+        };
+        reader.readAsArrayBuffer(resFile);
       }, e => {
         reject(e);
       });
