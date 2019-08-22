@@ -14,6 +14,8 @@ export class FileProvider {
   public static readonly DATA_SETS_DIRECTORY_NAME = 'data-sets';
   public static readonly LABELS_FILE_NAME = 'labels.json';
 
+  private static readonly NATIVE_URL_SEPARATOR = '/';
+
   constructor(public http: HttpClient) {
     console.log('Hello FileProvider Provider');
   }
@@ -58,6 +60,17 @@ export class FileProvider {
       });
     });    
   }
-  
-  
+
+  joinNativeUrl(path: string, paths: string[], endsWithSeparator: boolean) {
+    const pathsStr = paths.join(FileProvider.NATIVE_URL_SEPARATOR);
+    let suffix = '';
+    if (endsWithSeparator) {
+      suffix = FileProvider.NATIVE_URL_SEPARATOR;
+    }
+    if (path.indexOf(FileProvider.NATIVE_URL_SEPARATOR, path.length - FileProvider.NATIVE_URL_SEPARATOR.length) !== -1) {
+      return path + pathsStr + suffix;
+    } else {
+      return path + FileProvider.NATIVE_URL_SEPARATOR + pathsStr + suffix;
+    }
+  }  
 }

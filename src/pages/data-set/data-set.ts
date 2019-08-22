@@ -4,6 +4,7 @@ import { DataSetPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, DataAdditionPageN
 import { NeochiProvider } from '../../providers/neochi/neochi';
 import { FileProvider } from '../../providers/file/file';
 import { File } from '@ionic-native/file';
+import { HttpClient } from '@angular/common/http';
 
 /**
  * Generated class for the DataSetPage page.
@@ -34,7 +35,8 @@ export class DataSetPage {
     private alertController: AlertController,
     private neochiProvider: NeochiProvider,
     private fileProvider: FileProvider,
-    private file: File) {    
+    private file: File,
+    private httpClient: HttpClient) {    
   }
 
   ionViewDidLoad() {
@@ -238,8 +240,72 @@ export class DataSetPage {
     this.neochiProvider.setDataSets(dataSets);
   }
 
-  onClickTrain() {
+  async onClickTrain() {
+    // zipファイルの作成
+    try {
+      await this.createZipFile(this.dataSet.id);
+      await this.uploadZipFile(this.dataSet.id);
+    } catch (error) {
+      console.log("error:", error);
+    }
+  }
 
+  async createZipFile(dataSetId: number): Promise<void> {
+    const dataSetsDirectoryPath = this.fileProvider.joinNativeUrl(this.file.dataDirectory, 
+      [FileProvider.DATA_SETS_DIRECTORY_NAME], true);
+
+    const dataSetDirName = String(dataSetId);
+    const dataSetDirectoryPath = this.fileProvider.joinNativeUrl(dataSetsDirectoryPath, 
+      [dataSetDirName], true);
+
+    await this.file.checkDir(dataSetsDirectoryPath, dataSetDirName);
+      
+    let zipFileName = dataSetDirName + '.zip';
+    let zipFilePath = this.fileProvider.joinNativeUrl(dataSetsDirectoryPath, 
+      [zipFileName], false);
+
+    const zeep = (<any>window).Zeep;
+    return new Promise<void>((resolve, reject) => {
+      zeep.zip({
+        from : dataSetDirectoryPath,
+        to   : zipFilePath,
+      }, () => {
+        resolve();
+      }, function(e) {
+        reject(e);
+      });      
+    });
+  }
+
+  async uploadZipFile(dataSetId: number): Promise<void> {
+    const dataSetDirName = String(dataSetId);
+    const zipFileName = dataSetDirName + '.zip';
+
+    const dataSetsDirectoryPath = this.fileProvider.joinNativeUrl(this.file.dataDirectory, 
+      [FileProvider.DATA_SETS_DIRECTORY_NAME], true);
+    const dataSetsDirectoryEntry = await this.file.resolveDirectoryUrl(dataSetsDirectoryPath);
+
+    await this.file.checkFile(dataSetsDirectoryPath, zipFileName);
+
+    const zipFileEntry = await this.file.getFile(dataSetsDirectoryEntry, zipFileName, { create: false });
+
+    return new Promise<void>((resolve, reject) => {
+      zipFileEntry.file(fileToUpload => {
+        const endpoint = 'your-destination-url';
+        const formData: FormData = new FormData();
+        formData.append(zipFileName, fileToUpload, fileToUpload.name);
+        this.httpClient
+          .post(endpoint, formData).subscribe(data => {
+            console.log("data:", data);
+            resolve();
+          }, error => {
+            console.log("error:", error);
+            reject(error);
+          });
+      }, e => {
+        reject(e);
+      });
+    });
   }
 
   onClickAddData() {
