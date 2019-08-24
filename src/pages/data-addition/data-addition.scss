@@ -2,8 +2,11 @@ page-data-addition {
     ion-grid {
         height: 100%;
       
-        ion-row {
-          height: 50%;
+        .image-row {
+            height: 50%;
+        }        
+        .button-row {
+            height: 25%;
         }
     }
     .image-col {

@@ -17,6 +17,7 @@ import { NeochiProvider } from '../../providers/neochi/neochi';
 export class SettingsPage {
 
   ipAddressInputValue: string;
+  webApiBaseUrlInputValue: string;
   areContentsChanged: boolean;
 
   checksContentsChange: boolean;
@@ -35,6 +36,7 @@ export class SettingsPage {
 
   ionViewWillEnter() {
     this.ipAddressInputValue = this.neochiProvider.getNeochiIpAddress();
+    this.webApiBaseUrlInputValue = this.neochiProvider.getWebApiBaseUrl();
   }
 
   ionViewCanLeave(): boolean{
@@ -73,11 +75,21 @@ export class SettingsPage {
     this.areContentsChanged = true;    
   }
 
+  onInputWebApiBaseUrl() {
+    this.areContentsChanged = true;
+  }
+
   onClickSave() {
     if (!this.ipAddressInputValue || this.ipAddressInputValue.length === 0) {
       this.ipAddressInputValue = this.neochiProvider.getDefaultNeochiIpAddress();
     }
     this.neochiProvider.setNeochiIpAddress(this.ipAddressInputValue);
+
+    if (!this.webApiBaseUrlInputValue || this.webApiBaseUrlInputValue.length === 0) {
+      this.webApiBaseUrlInputValue = this.neochiProvider.getDefaultWebApiBaseUrl();
+    }
+    this.neochiProvider.setWebApiBaseUrl(this.webApiBaseUrlInputValue);
+    
     this.areContentsChanged = false;
     this.navCtrl.pop();
   }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { DataSetPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, DataAdditionPageNavParams, LABEL_AWAKE, LABEL_SLEEPING } from '../../interfaces/neochi';
+import { DataSetPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, DataAdditionPageNavParams, LABEL_NONE, LABEL_NO_MOVE_LAYING, LABEL_MOVE_LAYING, LABEL_MOVE } from '../../interfaces/neochi';
 import { NeochiProvider } from '../../providers/neochi/neochi';
 import { FileProvider } from '../../providers/file/file';
 import { File } from '@ionic-native/file';
@@ -307,9 +307,9 @@ export class DataSetPage {
 
           var zipBlob: any = new Blob([evt.target.result], { type: 'application/zip' });
           zipBlob.name = zipFileName;
-          const endpoint = 'http://192.168.0.13:8080/upload-file';
+          const endpoint = this.neochiProvider.getWebApiBaseUrl() + 'upload-file';
           const formData: FormData = new FormData();
-          formData.append(zipFileName, zipBlob, zipBlob.name);
+          formData.append('file', zipBlob, zipBlob.name);
           this.httpClient.post(endpoint, formData).subscribe(data => {
             console.log("data:", data);
             resolve();
@@ -347,16 +347,29 @@ export class DataSetPage {
 
     alert.addInput({
       type: 'checkbox',
-      label: '起きている',
-      value: LABEL_AWAKE,
+      label: '人がいない',
+      value: LABEL_NONE,
       checked: true
     });
-
+    alert.addInput({
+      type: 'checkbox',
+      label: '立って動いている',
+      value: LABEL_MOVE,
+      checked: true
+    });
+    alert.addInput({
+      type: 'checkbox',
+      label: '横になって動いている',
+      value: LABEL_MOVE_LAYING,
+      checked: true
+    });
     alert.addInput({
       type: 'checkbox',
       label: '寝ている',
-      value: LABEL_SLEEPING
+      value: LABEL_NO_MOVE_LAYING,
+      checked: true
     });
+
 
     alert.addButton('Cancel');
     alert.addButton({

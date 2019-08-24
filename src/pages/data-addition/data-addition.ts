@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, Loading } from 'ionic-angular';
-import { DataAdditionPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, LABEL_AWAKE, LABEL_SLEEPING, UNIT_IMAGE_NUMBER } from '../../interfaces/neochi';
+import { IonicPage, NavController, NavParams, LoadingController, Loading, ToastController } from 'ionic-angular';
+import { DataAdditionPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, UNIT_IMAGE_NUMBER, LABEL_NONE, LABEL_MOVE, LABEL_MOVE_LAYING, LABEL_NO_MOVE_LAYING } from '../../interfaces/neochi';
 import { Subscription } from 'rxjs/Subscription';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { ImageProvider } from '../../providers/image/image';
 import { File } from '@ionic-native/file';
 import { FileProvider } from '../../providers/file/file';
+import { RedisProvider } from '../../providers/redis/redis';
+import { NeochiProvider } from '../../providers/neochi/neochi';
 
 /**
  * Generated class for the DataAdditionPage page.
@@ -30,9 +32,15 @@ export class DataAdditionPage {
   
   captureTimer: Subscription;
 
+  requestedImage: boolean;
+  successiveNetworkErrorNum: number;
+
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
+    private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
+    private redisProvider: RedisProvider,
+    private neochiProvider: NeochiProvider,
     private imageProvider: ImageProvider,
     private fileProvider: FileProvider,
     private file: File) {
@@ -44,16 +52,25 @@ export class DataAdditionPage {
     if (params) {
       this.dataSet = params.dataSet;
     }
+    this.requestedImage = false;
+    this.successiveNetworkErrorNum = 0;
+
   }
 
   ionViewWillEnter() {
     console.log("IrSignalPage.ionViewWillEnter()");    
-    this.startCaptureTimer();
+    this.redisProvider.initialize(this.neochiProvider.getNeochiIpAddress()).then(() => {
+      this.startCaptureTimer();
+    }).catch(() => {
+    });
   }
 
   ionViewWillLeave() {
     console.log("IrSignalPage.ionViewWillLeave()");    
-    this.stopCaptureTimer();
+    this.abortCapture();
+    this.redisProvider.finalize().then(() => {
+    }).catch(() => {
+    });    
   }
 
   startCaptureTimer() {
@@ -64,28 +81,70 @@ export class DataAdditionPage {
     }
   }
 
+  canCapture(): boolean {
+    return this.captureTimer ? true : false;
+  }
+
+  abortCapture() {
+    // loadingを非表示
+    if (this.loading) {
+      this.loading.dismiss();
+      this.loading = null;
+    }
+    this.stopCaptureTimer()
+  }
+
   stopCaptureTimer() {
     if (this.captureTimer) {
       this.captureTimer.unsubscribe();
       this.captureTimer = null;
     }
   }
-  
-  async onCaptureTimer() {
-    // TODO 画像のRedisからの取得
-    const imageObject = {
-      width: 1,
-      height: 1,
-      channel: 3,
-      image: this.imageProvider.Base64a.encode(new Uint8Array(3)),
-      timeStamp: (new Date()).getTime() / 1000,
-    };
 
-    const value = imageObject;
-    var w = value['width'];
-    var h = value['height'];
-    var rgbData = this.imageProvider.Base64a.decode(value['image']);    
-    this.imageProvider.drawImageFromRGBdata(rgbData, w, h, 'canvas');
+  onNetworkSuccess() {
+    this.successiveNetworkErrorNum = 0;
+  }
+
+  onNetworkError() {
+    this.successiveNetworkErrorNum++;
+    if (this.successiveNetworkErrorNum >= 8) {
+      this.abortCapture();
+      this.presentNetworkErrorToast();
+    }
+  }
+
+  presentNetworkErrorToast() {
+    let toast = this.toastCtrl.create({
+      message: 'neochiへの接続に失敗しました',
+      duration: 3000,
+    });
+    toast.present();
+  }
+
+  async onCaptureTimer() {
+
+    if (!this.requestedImage) {
+      this.requestedImage = true;
+      this.redisProvider.getJsonValue('eye:image').then(async value => {
+        this.onNetworkSuccess();
+        if (value) {
+          // キャプチャー時刻を追加
+          value['captureTimeStamp'] = this.dateToFileNamePart(new Date());
+          await this.drawAndCaptureImage(value);
+        }
+        this.requestedImage = false;
+      }).catch(reason => {
+        this.onNetworkError();
+        this.requestedImage = false;
+      });  
+    }
+  }
+
+  async drawAndCaptureImage(imageObject: Object) {
+    var w = imageObject['width'];
+    var h = imageObject['height'];
+    var rgbData = this.imageProvider.Base64a.decode(imageObject['image']);    
+    this.imageProvider.drawImageFromRGBdata(rgbData, w, h, 'data-addition-canvas');
 
     // capturingImageObjects にimageObjectを追加
     if (this.isCapturing) {
@@ -109,10 +168,9 @@ export class DataAdditionPage {
         }
 
       }
-    }
-
-
+    }    
   }
+
 
   startCapture(label: string) {
     this.isCapturing = true;
@@ -126,21 +184,55 @@ export class DataAdditionPage {
     }
   }
 
-  onClickAwake() {
-    this.startCapture(LABEL_AWAKE);
+
+  onClickNone() {
+    this.startCapture(LABEL_NONE);
   }
 
-  onClickSleeping() {
-    this.startCapture(LABEL_SLEEPING);
+  onClickMove() {
+    this.startCapture(LABEL_MOVE);
   }
 
-  private imageObjectTimeStampToIsoString(timeStamp: number): string {
-    return (new Date(timeStamp * 1000)).toISOString();
+  onClickMoveLaying() {
+    this.startCapture(LABEL_MOVE_LAYING);
+  }
+
+  onClickNoMoveLaying() {
+    this.startCapture(LABEL_NO_MOVE_LAYING);
+  }
+
+
+  private dateToFileNamePart(date: Date) {
+    function pad(n: number) {
+      if (n < 10) {
+        return '0' + n;
+      }
+      return n;
+    }
+
+    return '' + date.getUTCFullYear() + 
+      pad(date.getUTCMonth() + 1) +
+      pad(date.getUTCDate()) +
+      pad(date.getUTCHours()) +
+      pad(date.getUTCMinutes()) +
+      pad(date.getUTCSeconds()) +
+      (date.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) + '000'
+  }
+
+  /*
+  private imageObjectTimeStampToIsoString(timeStamp: string): string {
+    //return (new Date(timeStamp * 1000)).toISOString();
+    let s = timeStamp;
+    let iso = s.substring(0, 4) + '-' + s.substring(4, 6) + '-' + s.substring(6, 8) + 
+      'T' + s.substring(8, 10) + ':' + s.substring(10, 12) + ':' + s.substring(12, 14) + '.' + s.substring(14, 20) + 'Z'
+    console.log("iso:", iso);
+    return iso;
   }
   
   private isoStringToFileNamePart(isoString: string) {
-      return (isoString.split('-').join('').split(':').join(''));
+      return (isoString.split('-').join('').split('T').join('').split(':').join('').split('.').join('').split('Z').join(''));
   }
+  */
   
   // データセットにイメージを追加する
   // 具体的には以下のパスにimageObjectsの数だけjsonファイルを追加する
@@ -166,17 +258,19 @@ export class DataAdditionPage {
     let dataSetDirectoryEntry = await this.file.getDirectory(dataSetsDirectoryEntry, dataSetDirName, { create: true });
     console.log("dataSetDirectoryEntry:", dataSetDirectoryEntry);
 
-    // <yyyymmddThhmmss.sss> のディレクトリーがなければ作成
-    let dataDirName = this.isoStringToFileNamePart(this.imageObjectTimeStampToIsoString(imageObjects[0]['timeStamp']));
+    // '%Y%m%d%H%M%S%f' のディレクトリーがなければ作成
+    //let dataDirName = this.isoStringToFileNamePart(this.imageObjectTimeStampToIsoString(imageObjects[0]['timeStamp']));
+    let dataDirName = imageObjects[0]['captureTimeStamp'];
     let dataDirectoryEntry = await this.file.getDirectory(dataSetDirectoryEntry, dataDirName, { create: true });
     console.log("dataDirName:", dataDirName);
     console.log("dataDirectoryEntry:", dataDirectoryEntry);
 
-    // image_<yyyymmddThhmmss.sss>.json のファイルを作成
+    // image_<'%Y%m%d%H%M%S%f'>.json のファイルを作成
     for (let index = 0; index < imageObjects.length; index++) {
       const imageObject = imageObjects[index];
       const fileName = 'image_' + 
-          this.isoStringToFileNamePart(this.imageObjectTimeStampToIsoString(imageObjects[index]['timeStamp'])) + 
+          //this.isoStringToFileNamePart(this.imageObjectTimeStampToIsoString(imageObjects[index]['timeStamp'])) + 
+          imageObjects[index]['captureTimeStamp'] +
           '.json';
       let fileEntry = await this.file.getFile(dataDirectoryEntry, fileName, { create: true });
       await this.fileProvider.writeObjectToFile(fileEntry, imageObject);

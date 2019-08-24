@@ -12,6 +12,7 @@ import { DataSet } from '../../interfaces/neochi';
 export class NeochiProvider {
 
   private static readonly DEFAULT_NEOCHI_IP_ADDRESS = '192.168.0.20';
+  private static readonly DEFAULT_WEB_API_BASE_URL = 'http://192.168.0.13/';
 
   constructor(public http: HttpClient) {
     console.log('Hello NeochiProvider Provider');
@@ -31,6 +32,22 @@ export class NeochiProvider {
 
   setNeochiIpAddress(ipAddress: string) {
     localStorage.setItem('neochiIpAddress', ipAddress);
+  }
+
+  getDefaultWebApiBaseUrl(): string {
+    return NeochiProvider.DEFAULT_WEB_API_BASE_URL;
+  }
+
+  getWebApiBaseUrl(): string {
+    let ipAddress = localStorage.getItem('webApiBaseUrl');
+    if (!ipAddress) {
+      ipAddress = NeochiProvider.DEFAULT_WEB_API_BASE_URL;
+    }
+    return ipAddress;
+  }
+
+  setWebApiBaseUrl(ipAddress: string) {
+    localStorage.setItem('webApiBaseUrl', ipAddress);
   }
 
   getDataSets(): DataSet[] {

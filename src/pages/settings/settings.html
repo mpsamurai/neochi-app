@@ -24,5 +24,9 @@
         <ion-label>neochi IPアドレス</ion-label>
         <ion-input [(ngModel)]="ipAddressInputValue" (input)="onInputIpAddress()"></ion-input>
       </ion-item>
+      <ion-item>
+        <ion-label>APIサーバーホスト</ion-label>
+        <ion-input [(ngModel)]="webApiBaseUrlInputValue" (input)="onInputWebApiBaseUrl()"></ion-input>
+      </ion-item>
     </ion-list>
 </ion-content>

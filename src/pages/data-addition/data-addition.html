@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>data-addition</ion-title>
+    <ion-title>データ追加</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,17 +15,25 @@
 
 <ion-content>
   <ion-grid>
-    <ion-row>
+    <ion-row class="image-row">
       <ion-col class="image-col">
-        <canvas id="canvas" class="image-canvas"></canvas>
+        <canvas id="data-addition-canvas" class="image-canvas"></canvas>
       </ion-col>
     </ion-row>
-    <ion-row>
+    <ion-row class="button-row">
       <ion-col>
-        <button ion-button block (click)="onClickAwake()">起きている</button>        
+        <button ion-button block [disabled]="!canCapture()" (click)="onClickNone()">人がいない</button>        
       </ion-col>
       <ion-col>
-        <button ion-button block (click)="onClickSleeping()">寝ている</button>        
+        <button ion-button block [disabled]="!canCapture()" (click)="onClickMove()">立って動いている</button>        
+      </ion-col>      
+    </ion-row>
+    <ion-row class="button-row">
+      <ion-col>
+        <button ion-button block [disabled]="!canCapture()" (click)="onClickMoveLaying()">横になって動いている</button>        
+      </ion-col>
+      <ion-col>
+        <button ion-button block [disabled]="!canCapture()" (click)="onClickNoMoveLaying()">寝ている</button>        
       </ion-col>      
     </ion-row>    
   </ion-grid>
