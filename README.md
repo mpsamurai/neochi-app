@@ -1,6 +1,13 @@
 # How to run
 
-1. 以下の手順でアプリとpluginをリポジトリから取得する
+1. nvm, node.js のインストール
+
+```
+(node.js v8.12.0 をインストールする nvmの利用を推奨)
+$ nvm install v8.12.0
+```
+
+2. 以下の手順でアプリとpluginをリポジトリから取得する
 ```
 $ mkdir xxxx
 $ git clone https://github.com/mpsamurai/neochi-app.git
@@ -10,20 +17,25 @@ $ cd ../neochi-app
 ```
 
 
-2. 以下の手順でアプリを起動する
+3. 以下の手順でアプリを起動する
 
 ```
 $ npm install
 (web版で表示のみ確認する）
 
-$ ionic serve
+$ npx ionic serve
  (ctrl +c)
 
-(モバイル用のリソース追加）
-$ ionic cordova platform add android 
-$ ionic cordova platform add ios 
+(Android端末用のビルド）
+$ npx ionic cordova build android 
 
-(Androidの実機確認）
-$ ionic cordova run android 
+(Android端末での実機確認)
+$ npx ionic cordova run android --device
 
+(iOS端末用のビルド）
+$ npx ionic cordova build ios
+
+(iOS端末での実機確認)
+neochi-app/platforms/ios/Neochi.xcworkspace
+をXCodeで開いて実行する
 ```
