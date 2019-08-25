@@ -21,10 +21,10 @@ $ cd ../neochi-app
 
 ```
 $ npm install
-(web版で表示のみ確認する）
 
+(web版で表示のみ確認する）
 $ npx ionic serve
- (ctrl +c)
+ (ctrl + c で終了)
 
 (Android端末用のビルド）
 $ npx ionic cordova build android 
