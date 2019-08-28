@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { DataSetPageNavParams, NAV_PARAMS_PARAM_NAME, DataSet, DataAdditionPageNavParams, LABEL_NONE, LABEL_NO_MOVE_LAYING, LABEL_MOVE_LAYING, LABEL_MOVE } from '../../interfaces/neochi';
 import { NeochiProvider } from '../../providers/neochi/neochi';
 import { FileProvider } from '../../providers/file/file';
@@ -36,6 +36,7 @@ export class DataSetPage {
     private neochiProvider: NeochiProvider,
     private fileProvider: FileProvider,
     private file: File,
+    private loadingCtrl: LoadingController,    
     private httpClient: HttpClient) {    
   }
 
@@ -241,13 +242,22 @@ export class DataSetPage {
   }
 
   async onClickTrain() {
+    const loading = this.loadingCtrl.create();
+    loading.present();  
+
     // zipファイルの作成
+    // loadingを表示
     try {
-      await this.createZipFile(this.dataSet.id);
-      await this.uploadZipFile(this.dataSet.id);
+      //await this.createZipFile(this.dataSet.id);
+      //await this.uploadZipFile(this.dataSet.id);
+      await this.fitModels();
+      await this.downloadModels();
     } catch (error) {
       console.log("error:", error);
+      alert(error.toString());
     }
+
+    loading.dismiss();      
   }
 
   async createZipFile(dataSetId: number): Promise<void> {
@@ -307,7 +317,7 @@ export class DataSetPage {
 
           var zipBlob: any = new Blob([evt.target.result], { type: 'application/zip' });
           zipBlob.name = zipFileName;
-          const endpoint = this.neochiProvider.getWebApiBaseUrl() + 'upload-file';
+          const endpoint = this.neochiProvider.getWebApiBaseUrl() + NeochiProvider.UPLOAD_DATA_API_URL;
           const formData: FormData = new FormData();
           formData.append('file', zipBlob, zipBlob.name);
           this.httpClient.post(endpoint, formData).subscribe(data => {
@@ -324,6 +334,30 @@ export class DataSetPage {
         reader.readAsArrayBuffer(resFile);
       }, e => {
         reject(e);
+      });
+    });
+  }
+
+  async fitModels() {
+    return new Promise<void>((resolve, reject) => {
+      const endpoint = this.neochiProvider.getWebApiBaseUrl() + NeochiProvider.FIT_MODELS_API_URL;
+      this.httpClient.get(endpoint).subscribe(data => {
+        console.log("data:", data);
+        resolve();
+      }, error => {
+        reject(error);
+      });
+    });
+  }
+
+  async downloadModels() {
+    return new Promise<void>((resolve, reject) => {
+      const endpoint = this.neochiProvider.getWebApiBaseUrl() + NeochiProvider.DOWNLOAD_MODELS_API_URL;
+      this.httpClient.get(endpoint).subscribe(data => {
+        console.log("data:", data);
+        resolve();
+      }, error => {
+        reject(error);
       });
     });
   }

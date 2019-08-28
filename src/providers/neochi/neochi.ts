@@ -14,6 +14,11 @@ export class NeochiProvider {
   private static readonly DEFAULT_NEOCHI_IP_ADDRESS = '192.168.0.20';
   private static readonly DEFAULT_WEB_API_BASE_URL = 'http://192.168.0.13/';
 
+  public static readonly UPLOAD_DATA_API_URL = 'data/upload';
+  public static readonly FIT_MODELS_API_URL = 'models/fit';
+  public static readonly DOWNLOAD_MODELS_API_URL = 'models/download';
+
+
   constructor(public http: HttpClient) {
     console.log('Hello NeochiProvider Provider');
   }
