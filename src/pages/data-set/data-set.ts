@@ -248,13 +248,14 @@ export class DataSetPage {
     // zipファイルの作成
     // loadingを表示
     try {
-      //await this.createZipFile(this.dataSet.id);
-      //await this.uploadZipFile(this.dataSet.id);
+      await this.createZipFile(this.dataSet.id);
+      await this.uploadZipFile(this.dataSet.id);
       await this.fitModels();
       await this.downloadModels();
     } catch (error) {
       console.log("error:", error);
-      alert(error.toString());
+      alert("name: " + error.name + "\n" +
+      "message: " + error.message);
     }
 
     loading.dismiss();      
