@@ -251,7 +251,9 @@ export class DataSetPage {
       await this.createZipFile(this.dataSet.id);
       await this.uploadZipFile(this.dataSet.id);
       await this.fitModels();
-      await this.downloadModels();
+      const data: ArrayBuffer = await this.downloadModels();
+      console.log("data:", data);
+      await this.uploadModels(data);
     } catch (error) {
       console.log("error:", error);
       alert("name: " + error.name + "\n" +
@@ -351,10 +353,26 @@ export class DataSetPage {
     });
   }
 
-  async downloadModels() {
-    return new Promise<void>((resolve, reject) => {
+  async downloadModels(): Promise<ArrayBuffer> {
+    return new Promise<ArrayBuffer>((resolve, reject) => {
       const endpoint = this.neochiProvider.getWebApiBaseUrl() + NeochiProvider.DOWNLOAD_MODELS_API_URL;
-      this.httpClient.get(endpoint).subscribe(data => {
+      this.httpClient.get(endpoint, {responseType: 'arraybuffer'}).subscribe(data => {
+        console.log("data:", data);
+        resolve(data);
+      }, error => {
+        reject(error);
+      });
+    });
+  }
+
+  async uploadModels(data: ArrayBuffer) {
+    return new Promise<void>((resolve, reject) => {
+      var zipBlob: any = new Blob([data], { type: 'application/zip' });
+      zipBlob.name = 'models.zip';
+      const endpoint = 'http://' + this.neochiProvider.getNeochiIpAddress() + '/' + NeochiProvider.UPLOAD_MODELS_API_URL;
+      const formData: FormData = new FormData();
+      formData.append('file', zipBlob, zipBlob.name);
+      this.httpClient.post(endpoint, formData).subscribe(data => {
         console.log("data:", data);
         resolve();
       }, error => {

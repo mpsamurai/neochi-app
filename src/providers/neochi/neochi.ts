@@ -18,6 +18,7 @@ export class NeochiProvider {
   public static readonly FIT_MODELS_API_URL = 'models/fit';
   public static readonly DOWNLOAD_MODELS_API_URL = 'models/download';
 
+  public static readonly UPLOAD_MODELS_API_URL = 'api/models';
 
   constructor(public http: HttpClient) {
     console.log('Hello NeochiProvider Provider');
